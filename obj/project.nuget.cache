@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "jZrlIffY2Q4=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\mmv6671\\OneDrive - MassMutual\\Documents\\Work\\Shashith\\Work Code\\SmartWorkspaceManagement\\SmartWorkspaceManagement.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mmv6671\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.14\\microsoft.aspnetcore.openapi.9.0.14.nupkg.sha512",
+    "C:\\Users\\mmv6671\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
