@@ -1,0 +1,240 @@
+Smart Work Space Management
+Rough Idea
+We have 2 ways to track whether the employee is in office or not
+
+• Cab booking details - not very accurate because ppl might opt for personal commute..
+• ID Card swipe in -  Very much accurate as everyone punches..
+• We can deploy QR codes at each desk and ask the employee to scan it whenever they wants to sit at that desk. To make it more accurate, 
+    we already store the asset details of each employee. When in office every employee will mostly connect the laptops to the LAN cable provided at each desk. 
+    If we figure out a way to notify us on when a laptop is connected to LAN cable we can easily track whether a desk is occupied or not..
+
+Zone-A - facing Road
+Zone-B - facing backside
+
+
+QR Codes will be generated Workstation number + ZoneID and will hit an API endpoint when it is scanned and get the user details. We now map the desk with the user.
+
+The authentication flow happens after the user opens that URL.
+
+A typical architecture looks like this:
+
+        Scan QR Code
+              │
+              ▼
+ https://api.example.com/scan
+              │
+              ▼
+   Check if user is authenticated
+              │
+      ┌───────┴────────┐
+      │                │
+      ▼                ▼
+Not logged in      Logged in
+      │                │
+      ▼                ▼
+ Redirect to      Continue to API
+ Okta Login
+      │
+      ▼
+ User authenticates
+      │
+      ▼
+ Okta redirects back with
+ Authorization Code
+      │
+      ▼
+ Exchange for tokens
+      │
+      ▼
+ Read user claims
+ (email, name, groups, etc.)
+
+
+User logs in.
+Okta returns an ID token/access token.
+Your API extracts claims such as:
+sub
+email
+preferred_username
+given_name
+family_name
+groups (if configured)
+
+User details you can retrieve
+
+From the ID token or the /userinfo endpoint, you can obtain claims such as:
+
+{
+  "sub": "00u12345...",
+  "email": "john@acme.com",
+  "name": "John Smith",
+  "preferred_username": "john@acme.com",
+  "given_name": "John",
+  "family_name": "Smith",
+  "groups": ["Admin", "Employees"]
+}
+
+
+
+When scanned:
+
+User opens the URL.
+Your application checks for an authenticated session.
+If not authenticated, redirect to the correct Okta authorization endpoint.
+After successful login, your backend receives the authorization code, exchanges it for tokens, and identifies the user.
+
+How to unlock the desk:
+
+• When the user laptop is not connected to the LAN for a stipulated time (let's say 45min) then we can unlock the desk for others to use..
+◦ What if the user is in a meeting which is more than the stipulated time? -> To avoid such cases we can use the EmpId that we get when the user scans his QR Code and access the Calendar to check if the employee is in any meeting. .
+◦ What if the user is in a meeting which is not scheduled and doesn't showup in Calendar? OR if user blocked a desk but away from desk for more than stipulated time -> We can use heartbeat-style reminders, which notifies users to confirm if the desk can be released or not..
+◦ if user is in office but didn't scan any QR. -> We can use TeamsBot/ SlackBot to notify the user or manager.
+
+
+Using these reading we can generate reports for which floor/zone/desk is heavily occupied on which days/shifts.
+Create live dashboards to view the free seats.
+To map or assign the new joiners to their buddy and assign a desk to managers near the team.
+
+AI Usage:
+
+• Can be used to suggest user about where his other teammates are seated and also check if any adjacent seat is available so that he can shift to that seat..
+• Favorite seat feature: As every user has their own favorite seat which can be near his friends, teammates, window seat etc. AI can be leveraged to identify if users favorite seat.
+
+===============================================================================================
+Feature incorporation checklist:
+
+Floor/wing/zone-wise seat availability dashboard
+Manager seat allocation view
+Employee hot seat booking
+Seat numbering/layout view
+Swipe-in validation against seat booking
+Shift pattern identification
+Access violation notification and manager approval
+Utilization reports by team, shift, floor, and zone
+
+Recommended additions:
+
+No-show policy configuration by site/floor.
+Privacy, retention, and audit controls.
+Accessibility/priority seating workflow.
+Manual override for BO/facilities admins.
+Exception dashboard for false positives.
+API integration layer for badge, LAN, calendar, HR/asset data.
+
+
+===============================================================================================
+MVP Roadmap:
+
+Phase 1: Foundation
+QR code generation, desk master, zone master, Okta login, baseline dashboard
+
+Phase 2: Validation
+Swipe-in match, LAN status ingestion, no-show detection, exception queue
+
+Phase 3: Automation
+45-minute release, calendar-aware hold, heartbeat reminders, manager approval
+
+Phase 4: Intelligence
+AI seat suggestions, favorite-seat patterns, shift forecasting, cost dashboards
+
+===============================================================================================
+What makes it credible:
+Multiple validation signals
+Employee-friendly remediation
+Manager governance loop
+Actionable dashboards
+AI-assisted seat recommendations
+
+Next inputs needed:
+Current desk count by floor
+Peak swipe-in by day/shift
+Current opex per desk/zone
+LAN signal availability/security review
+Privacy and data retention policy
+
+===============================================================================================
+
+Yes, but not from the barcode alone. There are ways to detect it automatically, depending on your network equipment.
+
+Here are the options, from best to simplest:
+
+Option 1: Use a Managed Network Switch (Recommended)
+
+If your LAN cables connect to a managed switch (Cisco, TP-Link JetStream, MikroTik, Ubiquiti, etc.), the switch already knows which device is connected to each port.
+
+The flow would be:
+
+Laptop L-001 is connected to LAN cable LN-005.
+LN-005 is permanently connected to Switch Port 12.
+The managed switch detects the laptop's MAC address on Port 12.
+Your software looks up:
+MAC Address → Laptop L-001
+Port 12 → LAN Cable LN-005
+Result:
+
+Laptop L-001 is connected to LAN Cable LN-005.
+
+No manual scanning is required.
+
+Option 2: Use the Laptop's MAC Address
+
+Every laptop has a unique network identifier called a MAC address.
+
+Store this in your database:
+
+Laptop      Barcode     MAC Address
+L-001 LAP001      3C:52:82:AA:12:45
+
+Then store:
+
+LAN Cable   Switch Port
+LN-005      Port 12
+
+When the laptop is plugged in:
+
+Switch reports MAC 3C:52:82:AA:12:45 on Port 12
+Database matches:
+MAC → L-001
+Port 12 → LN-005
+
+Automatically mapped.
+
+Option 3: Small Software Agent
+
+Install a small program on each laptop that reports:
+
+Laptop ID
+MAC address
+IP address
+Connection status
+
+Your server periodically checks the network and updates the mapping automatically.
+
+Can this work with an unmanaged switch?
+
+No. An unmanaged switch does not expose which MAC address is connected to which physical port, so there's no reliable way to map a laptop to a specific LAN cable automatically.
+
+Since you run a digital library
+
+I would recommend this setup:
+
+Barcode every laptop.
+Barcode every LAN cable.
+Use a managed switch.
+Store:
+Laptop Barcode
+Laptop MAC Address
+LAN Cable Barcode
+Switch Port Number
+Build a small dashboard that polls the switch every few seconds or minutes.
+
+Then you'll see something like:
+
+Laptop      Student     LAN Cable   Switch Port Status
+L-001 Rahul LN-005      Port 12     Connected
+L-002 Priya LN-008      Port 18     Connected
+
+No one needs to scan the cable or update the record manually.
+
+If you're comfortable building software, I can also show you how to query a managed switch (using SNMP or its API) so your application updates these mappings automatically.
+
