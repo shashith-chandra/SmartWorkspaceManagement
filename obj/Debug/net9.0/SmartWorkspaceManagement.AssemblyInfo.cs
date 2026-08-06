@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartWorkspaceManagement")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3b981a6b6446f0da56ffc9705bc8bc06653b5ae6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7643f00373710940b540e65c1810d82db860bab2")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartWorkspaceManagement")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartWorkspaceManagement")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
