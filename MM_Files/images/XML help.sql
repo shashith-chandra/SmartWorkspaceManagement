@@ -1,0 +1,221 @@
+--SELECT xr.OrderId
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[1]','varchar(20)') = ''
+--			THEN CONVERT(varchar(2),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[1]','varchar(2)')
+--		END [Type]
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[2]','varchar(20)') = ''
+--			THEN CONVERT(varchar(8),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[2]','varchar(8)')
+--		END FundID
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[3]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[3]','varchar(3)')
+--		END CurrencyCodeFinancial
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[4]','varchar(20)') = ''
+--			THEN CONVERT(varchar(16),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[4]','varchar(16)')
+--		END FundReferenceNumber
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[5]','varchar(20)') = ''
+--			THEN CONVERT(varchar(6),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[5]','varchar(6)')
+--		END Account
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[6]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[6]','varchar(3)')
+--		END SubAccount
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[7]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[7]','varchar(3)')
+--		END PostPeriodNumber
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[8]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[8]','varchar(3)')
+--		END BasisIndicator
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[9]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[9]','varchar(3)')
+--		END CurrencyCodeLocal
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[10]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[10]','varchar(3)')
+--		END CurrencyCodeBase
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[11]','varchar(20)') = ''
+--			THEN CONVERT(varchar(8),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[11]','varchar(8)')
+--		END PostTypeCode
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[12]','varchar(20)') = '' OR ISDATE(xr.XMLData.value('/Cols[1]/col[12]','varchar(20)')) = 0
+--			THEN CONVERT(date,NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[12]','date')
+--		END PostingDate
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[13]','varchar(20)') = '' OR ISDATE(xr.XMLData.value('/Cols[1]/col[13]','varchar(20)')) = 0
+--			THEN CONVERT(date,NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[13]','date')
+--		END EffectiveGLDate
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[14]','varchar(20)') = '' OR ISDATE(xr.XMLData.value('/Cols[1]/col[14]','varchar(20)')) = 0
+--			THEN CONVERT(date,NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[14]','date')
+--		END GLReferenceDate
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[15]','varchar(20)') = ''
+--			THEN CONVERT(varchar(11),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[15]','varchar(11)')
+--		END AssetID
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[16]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[16]','varchar(3)')
+--		END AlternateAssetIDTypeCode1
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[17]','varchar(25)') = ''
+--			THEN CONVERT(varchar(25),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[17]','varchar(25)')
+--		END AlternateAssetIDCode1
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[18]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[18]','varchar(3)')
+--		END AlternateAssetIDTypeCode2
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[19]','varchar(25)') = ''
+--			THEN CONVERT(varchar(25),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[19]','varchar(25)')
+--		END AlternateAssetIDCode2
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[20]','varchar(20)') = ''
+--			THEN CONVERT(varchar(11),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[20]','varchar(11)')
+--		END TradeIDNumber
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[21]','varchar(20)') = ''
+--			THEN CONVERT(varchar(8),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[21]','varchar(8)')
+--		END LotNumber
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[22]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[22]','decimal(18,2)')
+--			ELSE NULL						
+--		END PostAmountBase
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[23]','varchar(20)') = ''
+--			THEN CONVERT(varchar(1),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[23]','varchar(1)')
+--		END PostAmountDebitCreditIndicator	
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[24]','varchar(60)') = ''
+--			THEN CONVERT(varchar(60),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[24]','varchar(60)')
+--		END IssueLongName
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,3),xr.XMLData.value('/Cols[1]/col[25]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[25]','decimal(18,3)')
+--			ELSE NULL						
+--		END ParShareQuantity
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[26]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[26]','decimal(18,2)')
+--			ELSE NULL						
+--		END PrincipalAmountBase
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[27]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[27]','decimal(18,2)')
+--			ELSE NULL						
+--		END InterestAmountBase
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,11),xr.XMLData.value('/Cols[1]/col[28]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[28]','decimal(18,11)')
+--			ELSE NULL						
+--		END InterestRate
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[29]','varchar(20)') = '' OR ISDATE(xr.XMLData.value('/Cols[1]/col[29]','varchar(20)')) = 0
+--			THEN CONVERT(date,NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[29]','date')
+--		END TradeDate
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[30]','varchar(20)') = '' OR ISDATE(xr.XMLData.value('/Cols[1]/col[30]','varchar(20)')) = 0
+--			THEN CONVERT(date,NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[30]','date')
+--		END MaturityDate
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[31]','varchar(40)') = ''
+--			THEN CONVERT(varchar(40),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[31]','varchar(40)')
+--		END BrokerName
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[32]','varchar(20)') = ''
+--			THEN CONVERT(varchar(5),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[32]','varchar(5)')
+--		END BrokerFINSNumber
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[33]','varchar(20)') = ''
+--			THEN CONVERT(varchar(1),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[33]','varchar(1)')
+--		END NoActivityIndicator
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[34]','varchar(20)') = '' OR ISDATE(xr.XMLData.value('/Cols[1]/col[34]','varchar(20)')) = 0
+--			THEN CONVERT(date,NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[34]','date')
+--		END ReportFromDate
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[35]','varchar(20)') = '' OR ISDATE(xr.XMLData.value('/Cols[1]/col[35]','varchar(20)')) = 0
+--			THEN CONVERT(date,NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[35]','date')
+--		END ReportToDate
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[36]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[36]','decimal(18,2)')
+--			ELSE NULL						
+--		END BalanceAmountBase
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[37]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[37]','decimal(18,2)')
+--			ELSE NULL						
+--		END EODBalanceAmountBase
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[38]','varchar(30)') = ''
+--			THEN CONVERT(varchar(30),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[38]','varchar(30)')
+--		END GainLossSettlementDescription
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[39]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[39]','decimal(18,2)')
+--			ELSE NULL						
+--		END GainLossSettlmentAmountBase
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[40]','varchar(30)') = ''
+--			THEN CONVERT(varchar(30),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[40]','varchar(30)')
+--		END GainLossDisposalDescription
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[41]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[41]','decimal(18,2)')
+--			ELSE NULL						
+--		END GainLossDisposalAmountBase
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[42]','varchar(30)') = ''
+--			THEN CONVERT(varchar(30),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[42]','varchar(30)')
+--		END GainLossReceiptDescription
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[43]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[43]','decimal(18,2)')
+--			ELSE NULL						
+--		END GainLossReceiptAmountBase
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[44]','varchar(20)') = ''
+--			THEN CONVERT(varchar(1),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[44]','varchar(1)')
+--		END AssetGroupCode
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[45]','varchar(20)') = ''
+--			THEN CONVERT(varchar(9),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[45]','varchar(9)')
+--		END OffsetAccountNumber
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[46]','varchar(40)') = ''
+--			THEN CONVERT(varchar(40),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[46]','varchar(40)')
+--		END OffsetAccountName
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[47]','varchar(30)') = ''
+--			THEN CONVERT(varchar(30),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[47]','varchar(30)')
+--		END PostTypeDescription
+--		,CASE WHEN xr.XMLData.value('/Cols[1]/col[48]','varchar(20)') = ''
+--			THEN CONVERT(varchar(3),NULL)
+--			ELSE xr.XMLData.value('/Cols[1]/col[48]','varchar(3)')
+--		END TradeCurrency
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[49]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[49]','decimal(18,2)')
+--			ELSE NULL						
+--		END NetAmountBase
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[50]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[50]','decimal(18,2)')
+--			ELSE NULL						
+--		END PostedAmountLocal
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[51]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[51]','decimal(18,2)')
+--			ELSE NULL						
+--		END PrincipalAmountLocal
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[52]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[52]','decimal(18,2)')
+--			ELSE NULL						
+--		END InterestAmountLocal
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[53]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[53]','decimal(18,2)')
+--			ELSE NULL						
+--		END BalanceAmountLocal
+--		,CASE WHEN ISNUMERIC(TRY_CONVERT(decimal(18,2),xr.XMLData.value('/Cols[1]/col[54]','varchar(25)'))) = 1
+--			THEN xr.XMLData.value('/Cols[1]/col[54]','decimal(18,2)')
+--			ELSE NULL						
+--		END EODBalanceAmountLocal
+--		INTO #WorkTable
+--		FROM #XMLResults xr WITH(NOLOCK)
+--		ORDER BY xr.OrderId
+

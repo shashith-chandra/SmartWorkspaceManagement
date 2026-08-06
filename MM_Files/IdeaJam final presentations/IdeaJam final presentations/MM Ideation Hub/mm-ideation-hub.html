@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MM Ideation Hub</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F0F6FF;}
+    button{font-family:inherit;}
+    select{font-family:inherit;}
+    input{font-family:inherit;}
+    textarea{font-family:inherit;}
+    ::-webkit-scrollbar{width:6px;height:6px;}
+    ::-webkit-scrollbar-track{background:#F0F6FF;}
+    ::-webkit-scrollbar-thumb{background:#B0C4DE;border-radius:3px;}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const COLORS = {
+  navy:"#0F1B2D",primary:"#1A3A5C",accent:"#2196F3",teal:"#00BCD4",
+  green:"#27AE60",purple:"#8E44AD",gold:"#F39C12",red:"#E74C3C",
+  coral:"#D85A30",lightBg:"#F0F6FF",cardBg:"#FFFFFF",muted:"#7B93B1",border:"#D0E4F0",
+};
+const DEPT_OPTIONS=["Engineering","Product","Design","Marketing","Sales","HR","Operations","Finance","Legal","Data & Analytics"];
+const ROLE_OPTIONS=["Individual Contributor","Team Lead","Manager","Senior Manager","Director","VP","C-Suite","Intern / Co-op"];
+const INTEREST_OPTIONS=["AI / ML","Automation","UX / Design","Data","DevOps","Customer Experience","Cost Reduction","Culture & Wellbeing","Security","Product Growth"];
+const AVATAR_COLORS=["#1565C0","#00695C","#6A1B9A","#E65100","#283593","#880E4F","#006064","#4E342E","#37474F","#558B2F"];
+const DEFAULT_USER={name:"Sandeep",email:"Sandeep@MassMutual.com",role:"Individual Contributor",department:"Engineering",bio:"Passionate about building tools that make teams more productive.",avatar:"A",avatarColor:"#1565C0",interests:["AI / ML","Automation","DevOps"],joinDate:"Jan 2024",notifications:{email:true,inApp:true,digest:false},privacy:{showEmail:false,showVotes:true,showActivity:true},theme:"light"};
+const INITIAL_IDEAS=[
+  {id:1,title:"AI-Powered Customer Support Bot",category:"Business",shortDesc:"Automate tier-1 support tickets using AI to reduce response time.",detailDesc:"Implement an AI assistant trained on our product documentation and past support tickets. It would handle common queries automatically, escalating only complex issues to human agents. Expected to reduce ticket volume by 40% and response time from 8 hours to under 2 minutes.",example:"When a customer asks 'How do I reset my password?', the bot responds instantly with step-by-step instructions — freeing agents to handle complex billing disputes.",author:"Priya S.",avatar:"P",avatarColor:"#1565C0",likes:128,dislikes:14,comments:[{id:1,user:"Raj M.",avatar:"R",color:"#2E75B6",text:"We tried something similar in 2023, happy to share notes!",time:"2h ago"},{id:2,user:"Anita K.",avatar:"A",color:"#7B1FA2",text:"This would save our support team so much time. Fully behind it.",time:"1h ago"}],solutions:[{id:1,user:"Dev Team",text:"We can integrate GPT-4 with our Zendesk instance within 2 sprints.",votes:34}],tags:["AI","Support","Automation"],status:"Open",date:"Apr 18, 2026"},
+  {id:2,title:"Internal Knowledge Base with Smart Search",category:"Technical",shortDesc:"Elasticsearch-powered internal wiki for faster knowledge retrieval.",detailDesc:"Build a centralized knowledge base that indexes all internal documents, runbooks, and wikis with semantic search. Engineers currently spend 25% of their day searching for information across Confluence, Slack, and Drive.",example:"An engineer troubleshooting a production incident types 'database connection timeout fix' and instantly gets the exact runbook, past incident reports, and Slack threads — all in one place.",author:"Dev Team",avatar:"D",avatarColor:"#00695C",likes:95,dislikes:6,comments:[{id:1,user:"Sara L.",avatar:"S",color:"#C62828",text:"Elasticsearch + vector embeddings would make this incredibly powerful.",time:"5h ago"}],solutions:[],tags:["Search","Knowledge","Productivity"],status:"In Review",date:"Apr 15, 2026"},
+  {id:3,title:"Employee Wellness Check-in App",category:"Business",shortDesc:"Weekly pulse surveys to track team morale and flag burnout early.",detailDesc:"A lightweight mobile-friendly app where employees answer 3 quick questions weekly about workload, morale, and blockers. Managers get anonymized aggregate dashboards to spot trends before they become problems.",example:"After a brutal product launch, the system flags that engineering morale dropped 30% — the manager arranges a team offsite before anyone quits.",author:"HR Team",avatar:"H",avatarColor:"#E65100",likes:74,dislikes:22,comments:[],solutions:[{id:1,user:"Ops Team",text:"We can repurpose our existing survey tool (Typeform) with minimal customization.",votes:18}],tags:["HR","Wellness","Culture"],status:"Open",date:"Apr 12, 2026"},
+  {id:4,title:"Automated Code Review Pipeline",category:"Technical",shortDesc:"AI-assisted PR reviews to catch issues before human review.",detailDesc:"Integrate a static analysis + AI code review step into our CI pipeline that flags common bugs, security vulnerabilities, and style violations automatically. Human reviewers can then focus on architecture and logic.",example:"A developer opens a PR with a SQL injection vulnerability. The AI reviewer flags it in seconds with a suggested fix — before any human reviewer even looks at the PR.",author:"Eng Lead",avatar:"E",avatarColor:"#283593",likes:112,dislikes:8,comments:[{id:1,user:"Priya S.",avatar:"P",color:"#1565C0",text:"CodeRabbit + Semgrep combo would cover most of this.",time:"3h ago"}],solutions:[],tags:["DevOps","AI","Security"],status:"Solved",date:"Apr 10, 2026"},
+];
+const SAMPLE_EVENTS=[
+  {id:1,title:"Q2 Innovation Sprint",theme:"AI & Automation",description:"Submit your boldest AI and automation ideas for Q2. Top 3 winners receive implementation budget and engineering support.",startDate:"2026-04-01",endDate:"2026-04-30",votingDeadline:"2026-05-05",prize:"$5,000",eligibleCategories:["Business","Technical"],status:"active",submissions:[1,4],eventVotes:{1:47,4:62},winners:[],announced:false,organizer:"Innovation Team",banner:"🤖",maxSubmissions:20,registrations:["Priya S.","Dev Team","Eng Lead","Alex Johnson"]},
+  {id:2,title:"People & Culture Hackathon",theme:"Employee Experience",description:"Ideas that improve day-to-day life for our team — wellness, onboarding, learning, and collaboration.",startDate:"2026-03-15",endDate:"2026-04-10",votingDeadline:"2026-04-15",prize:"Trophy + featured in company all-hands",eligibleCategories:["Business"],status:"voting",submissions:[3],eventVotes:{3:31},winners:[],announced:false,organizer:"HR Team",banner:"🌱",maxSubmissions:15,registrations:["HR Team","Alex Johnson"]},
+  {id:3,title:"2025 Annual Idea Championship",theme:"All Categories",description:"Our biggest event of the year. All ideas eligible. Grand prize winner gets a full quarter of dedicated resources.",startDate:"2025-11-01",endDate:"2025-11-30",votingDeadline:"2025-12-05",prize:"Full quarter of dedicated resources + leadership presentation slot",eligibleCategories:["Business","Technical"],status:"completed",submissions:[1,2,3,4],eventVotes:{1:89,2:54,3:23,4:78},winners:[1,4],announced:true,organizer:"C-Suite",banner:"🏆",maxSubmissions:50,registrations:["Priya S.","Dev Team","HR Team","Eng Lead","Alex Johnson"]},
+];
+const catColors={Business:{bg:"#E3F2FD",text:"#1565C0",border:"#90CAF9"},Technical:{bg:"#E0F2F1",text:"#00695C",border:"#80CBC4"}};
+const statusColors={Open:{bg:"#E8F5E9",text:"#2E7D32"},"In Review":{bg:"#FFF8E1",text:"#F57F17"},Solved:{bg:"#EDE7F6",text:"#6A1B9A"}};
+const evStyle={active:{bg:"#E8F5E9",text:"#2E7D32",label:"🟢 Active"},voting:{bg:"#FFF8E1",text:"#B8860B",label:"🗳️ Voting Open"},completed:{bg:"#EDE7F6",text:"#6A1B9A",label:"✅ Completed"},draft:{bg:"#F5F5F5",text:"#607D8B",label:"📝 Draft"}};
+
+// ── Badge System ──────────────────────────────────────────────────────────────
+const BADGES = [
+  // Participation Tier Badges
+  { id:"gold",    tier:"gold",   icon:"🥇", label:"Gold Innovator",    desc:"Submitted 5+ ideas with 100+ total likes received",          color:"#B8860B", bg:"linear-gradient(135deg,#FFF8E1,#FFE082)", border:"#F39C12", check:(s)=>s.ideas>=5&&s.totalLikes>=100 },
+  { id:"silver",  tier:"silver", icon:"🥈", label:"Silver Contributor", desc:"Submitted 3+ ideas with 50+ total likes received",           color:"#5F7482", bg:"linear-gradient(135deg,#F5F5F5,#E0E0E0)", border:"#9E9E9E", check:(s)=>s.ideas>=3&&s.totalLikes>=50 },
+  { id:"bronze",  tier:"bronze", icon:"🥉", label:"Bronze Participant",  desc:"Submitted 1+ idea with 10+ total likes received",            color:"#8B5E3C", bg:"linear-gradient(135deg,#FBE9E7,#FFCCBC)", border:"#D7A57A", check:(s)=>s.ideas>=1&&s.totalLikes>=10 },
+  // Achievement Badges
+  { id:"ideator",    tier:"achievement", icon:"💡", label:"Idea Machine",      desc:"Submitted 3 or more ideas to the portal",               color:"#1565C0", bg:"#E3F2FD", border:"#90CAF9", check:(s)=>s.ideas>=3 },
+  { id:"voter",      tier:"achievement", icon:"🗳️", label:"Active Voter",      desc:"Cast 5 or more votes on community ideas",               color:"#6A1B9A", bg:"#F3E5F5", border:"#CE93D8", check:(s)=>s.votes>=5 },
+  { id:"commenter",  tier:"achievement", icon:"💬", label:"Discussion Leader", desc:"Posted 5 or more comments across the portal",           color:"#00695C", bg:"#E0F2F1", border:"#80CBC4", check:(s)=>s.comments>=5 },
+  { id:"solver",     tier:"achievement", icon:"🚀", label:"Solution Maker",    desc:"Published at least one solution to an idea",            color:"#E65100", bg:"#FBE9E7", border:"#FFAB91", check:(s)=>s.solutions>=1 },
+  { id:"popular",    tier:"achievement", icon:"🔥", label:"Fan Favourite",     desc:"An idea of yours has received 50+ likes",               color:"#B71C1C", bg:"#FFEBEE", border:"#EF9A9A", check:(s)=>s.maxIdeaLikes>=50 },
+  { id:"eventeer",   tier:"achievement", icon:"🏆", label:"Event Champion",    desc:"Registered for and participated in an event",           color:"#4E342E", bg:"#EFEBE9", border:"#BCAAA4", check:(s)=>s.eventsJoined>=1 },
+  { id:"winner",     tier:"achievement", icon:"🌟", label:"Event Winner",      desc:"Won at least one Ideation Event",                       color:"#F57F17", bg:"#FFF8E1", border:"#FFE082", check:(s)=>s.eventsWon>=1 },
+  { id:"pioneer",    tier:"achievement", icon:"🌱", label:"Early Adopter",     desc:"One of the first to submit an idea (idea ID ≤ 4)",      color:"#2E7D32", bg:"#E8F5E9", border:"#A5D6A7", check:(s)=>s.hasEarlyIdea },
+  { id:"allrounder", tier:"achievement", icon:"⭐", label:"All-Rounder",       desc:"Has ideas, votes, comments AND a solution",             color:"#1A3A5C", bg:"#E8EAF6", border:"#9FA8DA", check:(s)=>s.ideas>=1&&s.votes>=1&&s.comments>=1&&s.solutions>=1 },
+];
+
+function computeStats(user, ideas, userVotes, events=[]) {
+  const myIdeas = ideas.filter(i => i.author === user.name);
+  const totalLikes = myIdeas.reduce((s,i) => s+i.likes, 0);
+  const maxIdeaLikes = myIdeas.length > 0 ? Math.max(...myIdeas.map(i=>i.likes)) : 0;
+  const votes = Object.values(userVotes).filter(Boolean).length;
+  const comments = ideas.reduce((s,i) => s + i.comments.filter(c=>c.user===user.name).length, 0);
+  const solutions = ideas.reduce((s,i) => s + i.solutions.filter(sol=>sol.user===user.name).length, 0);
+  const eventsJoined = events.filter(e=>e.registrations.includes(user.name)).length;
+  const eventsWon = events.filter(e=>e.announced&&e.winners.length>0&&myIdeas.some(mi=>e.winners.includes(mi.id))).length;
+  const hasEarlyIdea = myIdeas.some(i=>i.id<=4);
+  return { ideas:myIdeas.length, totalLikes, maxIdeaLikes, votes, comments, solutions, eventsJoined, eventsWon, hasEarlyIdea };
+}
+
+function getUserBadges(stats) {
+  return BADGES.filter(b => b.check(stats));
+}
+
+function getTopTierBadge(earnedBadges) {
+  if (earnedBadges.find(b=>b.id==="gold"))   return earnedBadges.find(b=>b.id==="gold");
+  if (earnedBadges.find(b=>b.id==="silver")) return earnedBadges.find(b=>b.id==="silver");
+  if (earnedBadges.find(b=>b.id==="bronze")) return earnedBadges.find(b=>b.id==="bronze");
+  return null;
+}
+
+function BadgeChip({ badge, size="md" }) {
+  const sm = size === "sm";
+  return (
+    <div title={badge.desc} style={{
+      display:"inline-flex", alignItems:"center", gap: sm?4:6,
+      padding: sm?"3px 8px":"6px 12px",
+      borderRadius: 20,
+      background: badge.bg,
+      border: `1.5px solid ${badge.border}`,
+      cursor:"default",
+      flexShrink:0,
+    }}>
+      <span style={{fontSize: sm?12:15}}>{badge.icon}</span>
+      <span style={{fontSize: sm?10:12, fontWeight:700, color:badge.color, whiteSpace:"nowrap"}}>{badge.label}</span>
+    </div>
+  );
+}
+
+function BadgeCard({ badge, earned }) {
+  return (
+    <div style={{
+      padding:"14px 16px", borderRadius:14,
+      background: earned ? badge.bg : "#F8FAFB",
+      border: `1.5px solid ${earned ? badge.border : COLORS.border}`,
+      opacity: earned ? 1 : 0.55,
+      display:"flex", flexDirection:"column", gap:8,
+      transition:"all 0.2s",
+    }}>
+      <div style={{display:"flex", alignItems:"center", gap:8}}>
+        <span style={{fontSize:26, filter: earned?"none":"grayscale(1)"}}>{badge.icon}</span>
+        <div>
+          <div style={{fontSize:13, fontWeight:700, color: earned?badge.color:COLORS.muted}}>{badge.label}</div>
+          <div style={{fontSize:10, color:COLORS.muted, marginTop:1, textTransform:"uppercase", letterSpacing:0.5}}>{badge.tier==="gold"||badge.tier==="silver"||badge.tier==="bronze"?"Tier Badge":"Achievement"}</div>
+        </div>
+        {earned && <span style={{marginLeft:"auto", fontSize:16}}>✅</span>}
+      </div>
+      <div style={{fontSize:11, color:COLORS.muted, lineHeight:1.5}}>{badge.desc}</div>
+    </div>
+  );
+}
+
+function Av({letter,color,size=34,style={}}){return <div style={{width:size,height:size,borderRadius:"50%",background:color,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:size*0.38,fontWeight:700,flexShrink:0,...style}}>{letter}</div>}
+function Tog({checked,onChange}){return <div onClick={()=>onChange(!checked)} style={{width:38,height:22,borderRadius:11,background:checked?COLORS.accent:"#CBD5E1",cursor:"pointer",position:"relative",transition:"background 0.2s",flexShrink:0}}><div style={{position:"absolute",top:3,left:checked?19:3,width:16,height:16,borderRadius:"50%",background:"#fff",transition:"left 0.2s",boxShadow:"0 1px 4px rgba(0,0,0,0.2)"}}/></div>}
+function Pill({children,color="#2196F3",bg="#E3F2FD"}){return <span style={{fontSize:11,fontWeight:700,padding:"3px 10px",borderRadius:20,background:bg,color}}>{children}</span>}
+
+function IdeaCard({idea,onClick,userVotes,onVote}){
+  const total=idea.likes+idea.dislikes,pct=total>0?Math.round((idea.likes/total)*100):0;
+  const cat=catColors[idea.category],st=statusColors[idea.status],voted=userVotes[idea.id];
+  return <div onClick={()=>onClick(idea)} style={{background:COLORS.cardBg,border:`1px solid ${COLORS.border}`,borderRadius:16,padding:"20px 22px",cursor:"pointer",transition:"box-shadow 0.18s,transform 0.18s",boxShadow:"0 2px 12px rgba(15,27,45,0.07)",display:"flex",flexDirection:"column",gap:12}} onMouseEnter={e=>{e.currentTarget.style.boxShadow="0 8px 28px rgba(33,150,243,0.15)";e.currentTarget.style.transform="translateY(-2px)"}} onMouseLeave={e=>{e.currentTarget.style.boxShadow="0 2px 12px rgba(15,27,45,0.07)";e.currentTarget.style.transform="translateY(0)"}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div style={{display:"flex",gap:8,flexWrap:"wrap"}}><Pill color={cat.text} bg={cat.bg}>{idea.category==="Business"?"💼":"⚙️"} {idea.category}</Pill><Pill color={st.text} bg={st.bg}>{idea.status}</Pill></div><span style={{fontSize:11,color:COLORS.muted}}>{idea.date}</span></div>
+    <div><div style={{fontSize:16,fontWeight:700,color:COLORS.navy,marginBottom:6,lineHeight:1.35}}>{idea.title}</div><div style={{fontSize:13,color:"#445566",lineHeight:1.6}}>{idea.shortDesc}</div></div>
+    <div style={{display:"flex",flexWrap:"wrap",gap:6}}>{idea.tags.map(t=><span key={t} style={{fontSize:10,padding:"2px 8px",borderRadius:10,background:"#EEF4FF",color:COLORS.accent,fontWeight:600}}>#{t}</span>)}</div>
+    <div style={{display:"flex",alignItems:"center",gap:10}}><Av letter={idea.avatar} color={idea.avatarColor} size={28}/><span style={{fontSize:12,color:COLORS.muted}}>{idea.author}</span><div style={{flex:1}}/><button onClick={e=>{e.stopPropagation();onVote(idea.id,"like")}} style={{display:"flex",alignItems:"center",gap:4,padding:"5px 12px",borderRadius:20,border:`1.5px solid ${voted==="like"?COLORS.green:COLORS.border}`,background:voted==="like"?"#E8F5E9":"#fff",color:voted==="like"?COLORS.green:COLORS.muted,fontSize:12,fontWeight:600,cursor:"pointer"}}>👍 {idea.likes}</button><button onClick={e=>{e.stopPropagation();onVote(idea.id,"dislike")}} style={{display:"flex",alignItems:"center",gap:4,padding:"5px 12px",borderRadius:20,border:`1.5px solid ${voted==="dislike"?COLORS.red:COLORS.border}`,background:voted==="dislike"?"#FFEBEE":"#fff",color:voted==="dislike"?COLORS.red:COLORS.muted,fontSize:12,fontWeight:600,cursor:"pointer"}}>👎 {idea.dislikes}</button><span style={{fontSize:11,color:COLORS.muted}}>{idea.comments.length} 💬</span></div>
+    <div><div style={{height:5,borderRadius:4,background:"#E0E8F0",overflow:"hidden"}}><div style={{height:"100%",width:`${pct}%`,background:pct>70?COLORS.green:pct>40?COLORS.gold:COLORS.red,borderRadius:4}}/></div><div style={{fontSize:10,color:COLORS.muted,marginTop:3}}>Community score: {pct}%</div></div>
+  </div>
+}
+
+function IdeaModal({idea,onClose,userVotes,onVote,onAddComment,onAddSolution,currentUser}){
+  const [tab,setTab]=useState("detail"),[comment,setComment]=useState(""),[solution,setSolution]=useState(""),[aiLoading,setAiLoading]=useState(false),[aiText,setAiText]=useState(""),[schedOpen,setSchedOpen]=useState(false),[schedDate,setSchedDate]=useState(""),[schedMsg,setSchedMsg]=useState("");
+  const voted=userVotes[idea.id],cat=catColors[idea.category],st=statusColors[idea.status];
+  const fetchAI=async()=>{setAiLoading(true);setAiText("");try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:`Analyze this idea:\nTitle: "${idea.title}"\nCategory: ${idea.category}\nDescription: ${idea.detailDesc}\nExample: ${idea.example}\n\nProvide: 1) Impact (2-3 sentences) 2) Two next steps 3) One key risk. Be concise.`}]})});const d=await r.json();setAiText(d.content?.[0]?.text||"Could not load.");}catch{setAiText("Unable to connect. Try again.");}setAiLoading(false);};
+  return <div style={{position:"fixed",inset:0,background:"rgba(15,27,45,0.55)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}><div style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:720,maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"0 24px 64px rgba(15,27,45,0.25)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:COLORS.primary,padding:"22px 28px 0",color:"#fff"}}>
+      <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}><div style={{display:"flex",gap:8}}><Pill color={cat.text} bg={cat.bg}>{idea.category==="Business"?"💼":"⚙️"} {idea.category}</Pill><Pill color={st.text} bg={st.bg}>{idea.status}</Pill></div><button onClick={onClose} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:18,padding:"2px 10px"}}>✕</button></div>
+      <div style={{fontSize:20,fontWeight:700,marginBottom:10,lineHeight:1.3}}>{idea.title}</div>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}><Av letter={idea.avatar} color={idea.avatarColor} size={30}/><span style={{fontSize:13,color:"rgba(255,255,255,0.75)"}}>{idea.author} · {idea.date}</span></div>
+      <div style={{display:"flex"}}>{[["detail","📄 Detail"],["solutions",`💡 Solutions (${idea.solutions.length})`],["comments",`💬 Comments (${idea.comments.length})`],["ai","🤖 AI Advisor"]].map(([t,l])=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"10px 4px",border:"none",background:"none",color:tab===t?"#fff":"rgba(255,255,255,0.55)",fontWeight:tab===t?700:500,fontSize:12,borderBottom:tab===t?"2.5px solid #fff":"2.5px solid transparent",cursor:"pointer"}}>{l}</button>)}</div>
+    </div>
+    <div style={{flex:1,overflowY:"auto",padding:"22px 28px"}}>
+      {tab==="detail"&&<div style={{display:"flex",flexDirection:"column",gap:18}}>
+        <div style={{fontSize:14,color:"#334455",lineHeight:1.65,padding:"12px 16px",background:COLORS.lightBg,borderRadius:10,borderLeft:`3px solid ${COLORS.accent}`}}>{idea.shortDesc}</div>
+        <div style={{fontSize:14,color:"#334455",lineHeight:1.7}}>{idea.detailDesc}</div>
+        <div style={{fontSize:14,color:"#334455",lineHeight:1.65,padding:"12px 16px",background:"#F0FFF4",borderRadius:10,borderLeft:`3px solid ${COLORS.green}`}}>💡 {idea.example}</div>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>onVote(idea.id,"like")} style={{flex:1,padding:"10px",borderRadius:10,border:`2px solid ${voted==="like"?COLORS.green:COLORS.border}`,background:voted==="like"?"#E8F5E9":"#fff",color:voted==="like"?COLORS.green:COLORS.muted,fontSize:14,fontWeight:700,cursor:"pointer"}}>👍 Like · {idea.likes}</button>
+          <button onClick={()=>onVote(idea.id,"dislike")} style={{flex:1,padding:"10px",borderRadius:10,border:`2px solid ${voted==="dislike"?COLORS.red:COLORS.border}`,background:voted==="dislike"?"#FFEBEE":"#fff",color:voted==="dislike"?COLORS.red:COLORS.muted,fontSize:14,fontWeight:700,cursor:"pointer"}}>👎 Dislike · {idea.dislikes}</button>
+          <button onClick={()=>setSchedOpen(o=>!o)} style={{flex:1,padding:"10px",borderRadius:10,border:`2px solid ${COLORS.gold}`,background:"#FFFDE7",color:"#B8860B",fontSize:14,fontWeight:700,cursor:"pointer"}}>📅 Schedule</button>
+        </div>
+        {schedOpen&&<div style={{padding:16,background:"#FFFDE7",borderRadius:12,border:`1px solid ${COLORS.gold}`}}>{schedMsg?<div style={{color:COLORS.green,fontWeight:600,fontSize:13}}>{schedMsg}</div>:<div style={{display:"flex",gap:8}}><input type="datetime-local" value={schedDate} onChange={e=>setSchedDate(e.target.value)} style={{flex:1,padding:"8px 12px",borderRadius:8,border:`1px solid ${COLORS.border}`,fontSize:13}}/><button onClick={()=>{if(schedDate){setSchedMsg(`✅ Scheduled for ${new Date(schedDate).toLocaleString()}!`);setTimeout(()=>setSchedOpen(false),2500)}}} style={{padding:"8px 18px",borderRadius:8,background:COLORS.gold,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:13}}>Confirm</button></div>}</div>}
+      </div>}
+      {tab==="solutions"&&<div style={{display:"flex",flexDirection:"column",gap:14}}>
+        {idea.solutions.length===0&&<div style={{color:COLORS.muted,fontSize:14,textAlign:"center",padding:"20px 0"}}>No solutions yet — be the first!</div>}
+        {idea.solutions.map(s=><div key={s.id} style={{padding:"14px 18px",background:"#F0FFF4",borderRadius:12,border:"1px solid #A5D6A7"}}><div style={{fontSize:13,color:"#334455",lineHeight:1.6,marginBottom:6}}>{s.text}</div><div style={{fontSize:12,color:COLORS.green,fontWeight:600}}>— {s.user} · 👍 {s.votes}</div></div>)}
+        <div><textarea value={solution} onChange={e=>setSolution(e.target.value)} placeholder="Describe your proposed solution..." style={{width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,resize:"vertical",minHeight:80,boxSizing:"border-box",fontFamily:"inherit"}}/><button onClick={()=>{if(solution.trim()){onAddSolution(idea.id,solution);setSolution("")}}} style={{marginTop:8,padding:"10px 22px",borderRadius:10,background:COLORS.green,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:13}}>🚀 Publish Solution</button></div>
+      </div>}
+      {tab==="comments"&&<div style={{display:"flex",flexDirection:"column",gap:14}}>
+        {idea.comments.map(c=><div key={c.id} style={{display:"flex",gap:10}}><Av letter={c.avatar} color={c.color} size={34}/><div style={{flex:1}}><div style={{display:"flex",gap:8,marginBottom:4}}><span style={{fontSize:13,fontWeight:700,color:COLORS.navy}}>{c.user}</span><span style={{fontSize:11,color:COLORS.muted}}>{c.time}</span></div><div style={{padding:"10px 14px",background:COLORS.lightBg,borderRadius:"0 12px 12px 12px",fontSize:13,color:"#334455",lineHeight:1.6}}>{c.text}</div></div></div>)}
+        <div style={{display:"flex",gap:10,marginTop:6}}><Av letter={currentUser.avatar} color={currentUser.avatarColor} size={34}/><input value={comment} onChange={e=>setComment(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&comment.trim()){onAddComment(idea.id,comment,currentUser);setComment("")}}} placeholder="Add a comment… (Enter to post)" style={{flex:1,padding:"10px 14px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,fontFamily:"inherit"}}/><button onClick={()=>{if(comment.trim()){onAddComment(idea.id,comment,currentUser);setComment("")}}} style={{padding:"10px 18px",borderRadius:10,background:COLORS.accent,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:13}}>Post</button></div>
+      </div>}
+      {tab==="ai"&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        <div style={{padding:"16px 20px",background:"linear-gradient(135deg,#E3F2FD,#EDE7F6)",borderRadius:14,border:"1px solid #B3C9F0"}}><div style={{fontSize:14,fontWeight:700,color:COLORS.primary,marginBottom:6}}>🤖 AI Innovation Advisor</div><div style={{fontSize:13,color:"#445566",lineHeight:1.6}}>Get an AI-powered impact assessment, next steps, and risk analysis.</div></div>
+        <button onClick={fetchAI} disabled={aiLoading} style={{padding:"12px 24px",borderRadius:12,background:aiLoading?COLORS.muted:COLORS.accent,border:"none",color:"#fff",fontWeight:700,cursor:aiLoading?"default":"pointer",fontSize:14}}>{aiLoading?"⏳ Analysing…":"✨ Get AI Assessment"}</button>
+        {aiText&&<div style={{padding:"18px 20px",background:"#fff",borderRadius:14,border:`1px solid ${COLORS.border}`}}><div style={{fontSize:12,fontWeight:700,color:COLORS.accent,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>AI Assessment</div><div style={{fontSize:13,color:"#334455",lineHeight:1.75,whiteSpace:"pre-wrap"}}>{aiText}</div></div>}
+      </div>}
+    </div>
+  </div></div>
+}
+
+function SubmitModal({onClose,onSubmit,currentUser}){
+  const [form,setForm]=useState({title:"",category:"Business",shortDesc:"",detailDesc:"",example:"",tags:""});
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const valid=form.title.trim()&&form.shortDesc.trim()&&form.detailDesc.trim();
+  return <div style={{position:"fixed",inset:0,background:"rgba(15,27,45,0.55)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}><div style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:600,maxHeight:"90vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"0 24px 64px rgba(15,27,45,0.25)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:COLORS.primary,padding:"22px 28px",color:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><Av letter={currentUser.avatar} color={currentUser.avatarColor} size={36}/><div><div style={{fontSize:16,fontWeight:700}}>💡 Submit New Idea</div><div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginTop:1}}>as {currentUser.name}</div></div></div><button onClick={onClose} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:18,padding:"2px 10px"}}>✕</button></div>
+    <div style={{flex:1,overflowY:"auto",padding:"24px 28px",display:"flex",flexDirection:"column",gap:16}}>
+      {[{label:"Idea Title *",key:"title",placeholder:"e.g. AI-Powered Onboarding Assistant"},{label:"Short Description * (max 150 chars)",key:"shortDesc",placeholder:"One-line summary visible in the feed",max:150}].map(({label,key,placeholder,max})=><div key={key}><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>{label}</div><input value={form[key]} onChange={e=>set(key,e.target.value)} placeholder={placeholder} maxLength={max} style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,boxSizing:"border-box",fontFamily:"inherit"}}/></div>)}
+      <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>Category *</div><div style={{display:"flex",gap:10}}>{["Business","Technical"].map(c=><button key={c} onClick={()=>set("category",c)} style={{flex:1,padding:"10px",borderRadius:10,border:`2px solid ${form.category===c?COLORS.accent:COLORS.border}`,background:form.category===c?"#E3F2FD":"#fff",color:form.category===c?COLORS.accent:COLORS.muted,fontWeight:700,cursor:"pointer",fontSize:13}}>{c==="Business"?"💼 Business":"⚙️ Technical"}</button>)}</div></div>
+      {[{label:"Detailed Description *",key:"detailDesc",placeholder:"Background, problem being solved, proposed approach..."},{label:"Example & Impact",key:"example",placeholder:"Describe a real scenario where this helps someone..."},{label:"Tags (comma-separated)",key:"tags",placeholder:"e.g. AI, Automation, Cost Savings"}].map(({label,key,placeholder})=><div key={key}><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>{label}</div><textarea value={form[key]} onChange={e=>set(key,e.target.value)} placeholder={placeholder} style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,resize:"vertical",minHeight:80,boxSizing:"border-box",fontFamily:"inherit"}}/></div>)}
+      <button disabled={!valid} onClick={()=>{onSubmit(form);onClose()}} style={{padding:"13px",borderRadius:12,background:valid?COLORS.accent:COLORS.border,border:"none",color:"#fff",fontWeight:700,cursor:valid?"pointer":"default",fontSize:15}}>🚀 Submit Idea</button>
+    </div>
+  </div></div>
+}
+
+function ProfileModal({user,ideas,userVotes,events=[],onClose,onSave}){
+  const [tab,setTab]=useState("profile"),[form,setForm]=useState({...user}),[saved,setSaved]=useState(false);
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const setN=(p,k,v)=>setForm(f=>({...f,[p]:{...f[p],[k]:v}}));
+  const myIdeas=ideas.filter(i=>i.author===user.name),totalLikes=myIdeas.reduce((s,i)=>s+i.likes,0);
+  const stats=computeStats(user,ideas,userVotes,events);
+  const earnedBadges=getUserBadges(stats);
+  const topBadge=getTopTierBadge(earnedBadges);
+  const handleSave=()=>{onSave(form);setSaved(true);setTimeout(()=>setSaved(false),2000)};
+  const toggleInt=(interest)=>{const cur=form.interests||[];set("interests",cur.includes(interest)?cur.filter(i=>i!==interest):[...cur,interest])};
+  const tabs=[{id:"profile",label:"👤 Profile"},{id:"badges",label:`🏅 Badges (${earnedBadges.length})`},{id:"activity",label:"📊 Activity"},{id:"notifications",label:"🔔 Notifications"},{id:"privacy",label:"🔒 Privacy"},{id:"appearance",label:"🎨 Appearance"}];
+  return <div style={{position:"fixed",inset:0,background:"rgba(15,27,45,0.6)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}><div style={{background:"#fff",borderRadius:22,width:"100%",maxWidth:820,maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"0 32px 80px rgba(15,27,45,0.28)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:"linear-gradient(135deg,#1A3A5C 0%,#0D47A1 100%)",padding:"24px 28px 0",color:"#fff"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+        <div style={{display:"flex",alignItems:"center",gap:16}}>
+          <div style={{position:"relative"}}>
+            <Av letter={form.avatar} color={form.avatarColor} size={64}/>
+            {topBadge&&<div style={{position:"absolute",bottom:-4,right:-4,width:26,height:26,borderRadius:"50%",background:topBadge.bg,border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>{topBadge.icon}</div>}
+          </div>
+          <div>
+            <div style={{fontSize:20,fontWeight:800}}>{form.name}</div>
+            <div style={{fontSize:13,color:"rgba(255,255,255,0.75)",marginTop:2}}>{form.role} · {form.department}</div>
+            <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+              {topBadge&&<BadgeChip badge={topBadge} size="sm"/>}
+              {earnedBadges.filter(b=>b.tier==="achievement").slice(0,3).map(b=><BadgeChip key={b.id} badge={b} size="sm"/>)}
+              {earnedBadges.length>4&&<span style={{fontSize:10,color:"rgba(255,255,255,0.55)",alignSelf:"center"}}>+{earnedBadges.length-4} more</span>}
+              {earnedBadges.length===0&&<span style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>No badges yet — start contributing!</span>}
+            </div>
+          </div>
+        </div>
+        <button onClick={onClose} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:18,padding:"3px 11px"}}>✕</button>
+      </div>
+      <div style={{display:"flex",gap:2,overflowX:"auto"}}>{tabs.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 14px",border:"none",background:"none",color:tab===t.id?"#fff":"rgba(255,255,255,0.55)",fontWeight:tab===t.id?700:500,fontSize:12,borderBottom:tab===t.id?"2.5px solid #fff":"2.5px solid transparent",cursor:"pointer",whiteSpace:"nowrap"}}>{t.label}</button>)}</div>
+    </div>
+    <div style={{flex:1,overflowY:"auto",padding:"24px 28px"}}>
+      {tab==="profile"&&<div style={{display:"flex",flexDirection:"column",gap:20}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>{[{label:"Full Name",key:"name"},{label:"Email Address",key:"email"}].map(({label,key})=><div key={key}><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>{label}</div><input value={form[key]} onChange={e=>set(key,e.target.value)} style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1.5px solid ${COLORS.border}`,fontSize:13,boxSizing:"border-box",fontFamily:"inherit",outline:"none"}} onFocus={e=>e.target.style.borderColor=COLORS.accent} onBlur={e=>e.target.style.borderColor=COLORS.border}/></div>)}</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>{[{label:"Role",key:"role",options:ROLE_OPTIONS},{label:"Department",key:"department",options:DEPT_OPTIONS}].map(({label,key,options})=><div key={key}><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>{label}</div><select value={form[key]} onChange={e=>set(key,e.target.value)} style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1.5px solid ${COLORS.border}`,fontSize:13,boxSizing:"border-box",fontFamily:"inherit",background:"#fff",outline:"none"}}>{options.map(o=><option key={o}>{o}</option>)}</select></div>)}</div>
+        <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>Bio</div><textarea value={form.bio} onChange={e=>set("bio",e.target.value)} rows={3} style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1.5px solid ${COLORS.border}`,fontSize:13,resize:"vertical",boxSizing:"border-box",fontFamily:"inherit",outline:"none"}} onFocus={e=>e.target.style.borderColor=COLORS.accent} onBlur={e=>e.target.style.borderColor=COLORS.border}/></div>
+        <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:10}}>Avatar Color</div><div style={{display:"flex",gap:10,flexWrap:"wrap"}}>{AVATAR_COLORS.map(c=><div key={c} onClick={()=>set("avatarColor",c)} style={{width:34,height:34,borderRadius:"50%",background:c,cursor:"pointer",border:form.avatarColor===c?"3px solid #fff":"3px solid transparent",boxShadow:form.avatarColor===c?`0 0 0 2px ${COLORS.accent}`:"none",transition:"all 0.15s"}}/>)}</div></div>
+        <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:10}}>Innovation Interests</div><div style={{display:"flex",flexWrap:"wrap",gap:8}}>{INTEREST_OPTIONS.map(interest=>{const active=(form.interests||[]).includes(interest);return<button key={interest} onClick={()=>toggleInt(interest)} style={{padding:"6px 14px",borderRadius:20,border:`1.5px solid ${active?COLORS.accent:COLORS.border}`,background:active?"#E3F2FD":"#fff",color:active?COLORS.accent:COLORS.muted,fontSize:12,fontWeight:active?700:500,cursor:"pointer"}}>{active?"✓ ":""}{interest}</button>})}</div></div>
+      </div>}
+
+      {tab==="badges"&&<div style={{display:"flex",flexDirection:"column",gap:20}}>
+        {/* Tier progress */}
+        <div style={{padding:"20px 22px",background:"linear-gradient(135deg,#FFF8E1,#FFF3C4)",borderRadius:16,border:`1.5px solid ${COLORS.gold}`}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#7D5A00",marginBottom:14}}>🏅 Participation Tier</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+            {[
+              {id:"bronze",icon:"🥉",label:"Bronze",color:"#8B5E3C",bg:"#FBE9E7",border:"#D7A57A",req:"1 idea · 10 likes"},
+              {id:"silver",icon:"🥈",label:"Silver",color:"#5F7482",bg:"#F5F5F5",border:"#9E9E9E",req:"3 ideas · 50 likes"},
+              {id:"gold",  icon:"🥇",label:"Gold",  color:"#B8860B",bg:"#FFF8E1",border:"#F39C12",req:"5 ideas · 100 likes"},
+            ].map(tier=>{
+              const earned=earnedBadges.find(b=>b.id===tier.id);
+              return <div key={tier.id} style={{padding:"14px",borderRadius:12,background:earned?tier.bg:"#F8FAFB",border:`2px solid ${earned?tier.border:COLORS.border}`,textAlign:"center",transition:"all 0.2s"}}>
+                <div style={{fontSize:32,filter:earned?"none":"grayscale(1) opacity(0.4)"}}>{tier.icon}</div>
+                <div style={{fontSize:13,fontWeight:800,color:earned?tier.color:COLORS.muted,marginTop:6}}>{tier.label}</div>
+                <div style={{fontSize:10,color:COLORS.muted,marginTop:3,lineHeight:1.4}}>{tier.req}</div>
+                {earned?<div style={{fontSize:10,fontWeight:700,color:tier.color,marginTop:6}}>✅ Earned</div>:<div style={{fontSize:10,color:COLORS.muted,marginTop:6}}>Locked</div>}
+              </div>;
+            })}
+          </div>
+          <div style={{marginTop:14}}>
+            <div style={{fontSize:11,color:"#8D6E00",marginBottom:6,fontWeight:600}}>Your progress → {stats.ideas} idea{stats.ideas!==1?"s":""} · {stats.totalLikes} likes received</div>
+            <div style={{height:8,borderRadius:4,background:"rgba(0,0,0,0.1)",overflow:"hidden"}}>
+              <div style={{height:"100%",width:`${Math.min(100,Math.round((stats.totalLikes/100)*100))}%`,background:COLORS.gold,borderRadius:4,transition:"width 0.6s"}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#8D6E00",marginTop:4}}><span>Bronze</span><span>Silver</span><span>Gold</span></div>
+          </div>
+        </div>
+
+        {/* Earned badges summary */}
+        {earnedBadges.length>0&&<div>
+          <div style={{fontSize:13,fontWeight:700,color:COLORS.navy,marginBottom:10}}>✅ Your Badges ({earnedBadges.length})</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:4}}>{earnedBadges.map(b=><BadgeChip key={b.id} badge={b}/>)}</div>
+        </div>}
+
+        {/* All badges grid */}
+        <div>
+          <div style={{fontSize:13,fontWeight:700,color:COLORS.navy,marginBottom:12}}>All Achievements</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            {BADGES.filter(b=>b.tier==="achievement").map(badge=><BadgeCard key={badge.id} badge={badge} earned={!!earnedBadges.find(e=>e.id===badge.id)}/>)}
+          </div>
+        </div>
+
+        {/* Next to unlock */}
+        {(()=>{
+          const nextBadge=BADGES.find(b=>!earnedBadges.find(e=>e.id===b.id));
+          if(!nextBadge)return<div style={{padding:"16px",background:"#E8F5E9",borderRadius:14,border:"1px solid #A5D6A7",textAlign:"center"}}><div style={{fontSize:28,marginBottom:6}}>🎉</div><div style={{fontSize:14,fontWeight:700,color:COLORS.green}}>You've earned all badges!</div><div style={{fontSize:12,color:COLORS.muted,marginTop:4}}>Outstanding contribution to the MM Ideation Hub.</div></div>;
+          return<div style={{padding:"16px 20px",background:COLORS.lightBg,borderRadius:14,border:`1px solid ${COLORS.border}`}}>
+            <div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:8}}>🎯 Next to unlock</div>
+            <div style={{display:"flex",alignItems:"center",gap:12}}><span style={{fontSize:28}}>{nextBadge.icon}</span><div><div style={{fontSize:13,fontWeight:700,color:COLORS.navy}}>{nextBadge.label}</div><div style={{fontSize:12,color:COLORS.muted,marginTop:2}}>{nextBadge.desc}</div></div></div>
+          </div>;
+        })()}
+      </div>}
+
+      {tab==="activity"&&<div style={{display:"flex",flexDirection:"column",gap:20}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>{[{label:"Ideas",value:stats.ideas,color:COLORS.accent,icon:"💡"},{label:"Likes Rcvd",value:stats.totalLikes,color:COLORS.green,icon:"👍"},{label:"Votes Cast",value:stats.votes,color:COLORS.purple,icon:"🗳️"},{label:"Comments",value:stats.comments,color:COLORS.gold,icon:"💬"}].map(({label,value,color,icon})=><div key={label} style={{background:"#fff",border:`1px solid ${COLORS.border}`,borderRadius:14,padding:"16px 14px",textAlign:"center"}}><div style={{fontSize:22}}>{icon}</div><div style={{fontSize:26,fontWeight:800,color,marginTop:4}}>{value}</div><div style={{fontSize:11,color:COLORS.muted,fontWeight:600,marginTop:2}}>{label}</div></div>)}</div>
+        <div><div style={{fontSize:13,fontWeight:700,color:COLORS.navy,marginBottom:10}}>💡 My Ideas</div>{myIdeas.length===0?<div style={{color:COLORS.muted,fontSize:13}}>No ideas submitted yet.</div>:myIdeas.map(idea=><div key={idea.id} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:COLORS.lightBg,borderRadius:10,marginBottom:8,border:`1px solid ${COLORS.border}`}}><span style={{fontSize:11,padding:"2px 8px",borderRadius:10,background:catColors[idea.category].bg,color:catColors[idea.category].text,fontWeight:700}}>{idea.category}</span><div style={{flex:1,fontSize:13,fontWeight:600,color:COLORS.navy}}>{idea.title}</div><span style={{fontSize:11,color:COLORS.green,fontWeight:700}}>👍 {idea.likes}</span></div>)}</div>
+        <div style={{padding:"16px 18px",background:COLORS.lightBg,borderRadius:14,border:`1px solid ${COLORS.border}`}}>
+          <div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:10}}>🏆 Contribution Level</div>
+          {(()=>{const score=stats.ideas*10+stats.totalLikes+stats.votes*2+stats.comments;const level=score<20?"Explorer":score<60?"Contributor":score<150?"Innovator":"Champion";const pct=Math.min(100,Math.round((score/200)*100));const lc=score<20?COLORS.muted:score<60?COLORS.accent:score<150?COLORS.purple:COLORS.gold;return<><div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:14,fontWeight:700,color:lc}}>🎖️ {level}</span><span style={{fontSize:12,color:COLORS.muted}}>{score} pts</span></div><div style={{height:8,borderRadius:4,background:"#D0E4F0"}}><div style={{height:"100%",width:`${pct}%`,background:lc,borderRadius:4,transition:"width 0.6s"}}/></div><div style={{fontSize:11,color:COLORS.muted,marginTop:6}}>Submit and vote to level up!</div></>})()}
+        </div>
+      </div>}
+      {tab==="notifications"&&<div style={{display:"flex",flexDirection:"column",gap:8}}>{[{key:"email",label:"Email Notifications",desc:"Get emailed when someone comments or votes on your ideas.",icon:"📧"},{key:"inApp",label:"In-App Notifications",desc:"See a badge in the portal for new activity.",icon:"🔔"},{key:"digest",label:"Weekly Digest",desc:"A weekly summary of top ideas every Monday.",icon:"📋"}].map(({key,label,desc,icon})=><div key={key} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 18px",background:COLORS.lightBg,borderRadius:12,border:`1px solid ${COLORS.border}`,marginBottom:8}}><span style={{fontSize:22}}>{icon}</span><div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:COLORS.navy}}>{label}</div><div style={{fontSize:12,color:COLORS.muted,marginTop:2}}>{desc}</div></div><Tog checked={form.notifications[key]} onChange={v=>setN("notifications",key,v)}/></div>)}</div>}
+      {tab==="privacy"&&<div style={{display:"flex",flexDirection:"column",gap:8}}>{[{key:"showEmail",label:"Show Email Address",desc:"Let others see your email on your profile.",icon:"📧"},{key:"showVotes",label:"Show Voting Activity",desc:"Let others see which ideas you've voted on.",icon:"🗳️"},{key:"showActivity",label:"Show Activity Feed",desc:"Let others see your comments and submissions.",icon:"📊"}].map(({key,label,desc,icon})=><div key={key} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 18px",background:COLORS.lightBg,borderRadius:12,border:`1px solid ${COLORS.border}`,marginBottom:8}}><span style={{fontSize:22}}>{icon}</span><div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:COLORS.navy}}>{label}</div><div style={{fontSize:12,color:COLORS.muted,marginTop:2}}>{desc}</div></div><Tog checked={form.privacy[key]} onChange={v=>setN("privacy",key,v)}/></div>)}</div>}
+      {tab==="appearance"&&<div style={{display:"flex",flexDirection:"column",gap:20}}><div><div style={{fontSize:13,fontWeight:700,color:COLORS.navy,marginBottom:12}}>Theme</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{[{value:"light",label:"☀️ Light",desc:"Clean and bright.",preview:["#F0F6FF","#FFFFFF","#1A3A5C"]},{value:"dark",label:"🌙 Dark",desc:"Easy on the eyes.",preview:["#0F1B2D","#1A2B40","#2196F3"]}].map(({value,label,desc,preview})=><div key={value} onClick={()=>set("theme",value)} style={{padding:"16px",borderRadius:14,border:`2px solid ${form.theme===value?COLORS.accent:COLORS.border}`,cursor:"pointer",background:form.theme===value?"#E3F2FD":"#fff"}}><div style={{display:"flex",gap:6,marginBottom:10}}>{preview.map((c,i)=><div key={i} style={{flex:1,height:24,borderRadius:4,background:c}}/>)}</div><div style={{fontSize:13,fontWeight:700,color:COLORS.navy}}>{label}</div><div style={{fontSize:12,color:COLORS.muted,marginTop:3}}>{desc}</div>{form.theme===value&&<div style={{fontSize:11,color:COLORS.accent,fontWeight:700,marginTop:6}}>✓ Active</div>}</div>)}</div></div></div>}
+    </div>
+    <div style={{padding:"16px 28px",borderTop:`1px solid ${COLORS.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:"#FAFBFD"}}><div style={{fontSize:12,color:saved?COLORS.green:"transparent",fontWeight:600}}>✅ Changes saved!</div><div style={{display:"flex",gap:10}}><button onClick={onClose} style={{padding:"10px 22px",borderRadius:10,border:`1.5px solid ${COLORS.border}`,background:"#fff",color:COLORS.muted,fontWeight:600,cursor:"pointer",fontSize:13}}>Cancel</button><button onClick={handleSave} style={{padding:"10px 28px",borderRadius:10,background:COLORS.accent,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:13}}>Save Changes</button></div></div>
+  </div></div>
+}
+
+// ════════════════════════════════════════════
+// 🏆 EVENTS SYSTEM
+// ════════════════════════════════════════════
+
+function EventCard({event,ideas,onClick}){
+  const es=evStyle[event.status];
+  const topId=event.submissions.length>0?event.submissions.reduce((b,s)=>(event.eventVotes[s]||0)>(event.eventVotes[b]||0)?s:b,event.submissions[0]):null;
+  const topIdea=topId?ideas.find(i=>i.id===topId):null;
+  const daysLeft=event.status==="active"?Math.max(0,Math.ceil((new Date(event.endDate)-new Date())/(864e5))):null;
+  return <div onClick={()=>onClick(event)} style={{background:"#fff",border:`1px solid ${COLORS.border}`,borderRadius:18,overflow:"hidden",cursor:"pointer",transition:"box-shadow 0.18s,transform 0.18s",boxShadow:"0 2px 14px rgba(15,27,45,0.07)"}} onMouseEnter={e=>{e.currentTarget.style.boxShadow="0 10px 32px rgba(33,150,243,0.14)";e.currentTarget.style.transform="translateY(-2px)"}} onMouseLeave={e=>{e.currentTarget.style.boxShadow="0 2px 14px rgba(15,27,45,0.07)";e.currentTarget.style.transform="translateY(0)"}}>
+    <div style={{background:`linear-gradient(135deg,${COLORS.primary},#0D47A1)`,padding:"20px 22px",color:"#fff",position:"relative"}}>
+      <div style={{fontSize:36,marginBottom:8}}>{event.banner}</div>
+      <div style={{fontSize:17,fontWeight:800,lineHeight:1.3,marginBottom:4}}>{event.title}</div>
+      <div style={{fontSize:12,color:"rgba(255,255,255,0.7)"}}>Theme: {event.theme}</div>
+      <div style={{position:"absolute",top:16,right:16}}><span style={{fontSize:11,fontWeight:700,padding:"4px 12px",borderRadius:20,background:es.bg,color:es.text}}>{es.label}</span></div>
+      {daysLeft!==null&&<div style={{position:"absolute",bottom:16,right:16,textAlign:"right"}}><div style={{fontSize:22,fontWeight:800}}>{daysLeft}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.7)"}}>days left</div></div>}
+    </div>
+    <div style={{padding:"16px 22px",display:"flex",flexDirection:"column",gap:12}}>
+      <div style={{fontSize:13,color:"#445566",lineHeight:1.6}}>{event.description.slice(0,100)}…</div>
+      <div style={{display:"flex",gap:20}}>
+        <div style={{textAlign:"center"}}><div style={{fontSize:20,fontWeight:800,color:COLORS.accent}}>{event.submissions.length}</div><div style={{fontSize:10,color:COLORS.muted,fontWeight:600}}>IDEAS</div></div>
+        <div style={{textAlign:"center"}}><div style={{fontSize:20,fontWeight:800,color:COLORS.green}}>{event.registrations.length}</div><div style={{fontSize:10,color:COLORS.muted,fontWeight:600}}>REGISTERED</div></div>
+        <div style={{textAlign:"center"}}><div style={{fontSize:20,fontWeight:800,color:COLORS.gold}}>{Object.values(event.eventVotes).reduce((s,v)=>s+v,0)}</div><div style={{fontSize:10,color:COLORS.muted,fontWeight:600}}>VOTES</div></div>
+      </div>
+      {event.announced&&event.winners.length>0&&<div style={{padding:"10px 14px",background:"linear-gradient(135deg,#FFF8E1,#FFFDE7)",borderRadius:10,border:`1px solid ${COLORS.gold}`,fontSize:12}}><span style={{fontWeight:700,color:"#B8860B"}}>🏆 Winners announced!</span></div>}
+      {topIdea&&!event.announced&&<div style={{padding:"10px 14px",background:COLORS.lightBg,borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:12,color:COLORS.muted}}>🔥 Leading: <strong style={{color:COLORS.navy}}>{topIdea.title}</strong></div>}
+      <div style={{fontSize:11,color:COLORS.muted}}>🎁 {event.prize}</div>
+    </div>
+  </div>
+}
+
+function EventDetail({event,ideas,currentUser,onClose,onVoteIdea,onSubmitToEvent,onAnnounceWinners}){
+  const [tab,setTab]=useState("detail");
+  const [evVoted,setEvVoted]=useState({});
+  const [winnerPicks,setWinnerPicks]=useState(event.winners||[]);
+  const [announced,setAnnounced]=useState(event.announced||false);
+  const [aiLoading,setAiLoading]=useState(false),[aiRecs,setAiRecs]=useState("");
+  const [localEvent,setLocalEvent]=useState(event);
+
+  const submitted=localEvent.submissions.map(sid=>ideas.find(i=>i.id===sid)).filter(Boolean);
+  const ranked=[...submitted].sort((a,b)=>(localEvent.eventVotes[b.id]||0)-(localEvent.eventVotes[a.id]||0));
+  const totalVotes=Object.values(localEvent.eventVotes).reduce((s,v)=>s+v,0);
+  const es=evStyle[localEvent.status];
+  const isReg=localEvent.registrations.includes(currentUser.name);
+  const tabs=localEvent.status==="completed"||announced
+    ?[["detail","📋 Event"],["leaderboard","🏅 Leaderboard"],["winners","🏆 Winners"],["ai","🤖 AI Judge"]]
+    :[["detail","📋 Event"],["ideas","💡 Ideas"],["leaderboard","🏅 Leaderboard"],["ai","🤖 AI Judge"]];
+
+  const handleEvVote=(ideaId)=>{
+    if(evVoted[ideaId])return;
+    setEvVoted(m=>({...m,[ideaId]:true}));
+    setLocalEvent(e=>({...e,eventVotes:{...e.eventVotes,[ideaId]:(e.eventVotes[ideaId]||0)+1}}));
+    onVoteIdea(localEvent.id,ideaId);
+  };
+  const fetchAI=async()=>{
+    setAiLoading(true);setAiRecs("");
+    const lines=ranked.slice(0,5).map((idea,i)=>`${i+1}. ${idea.title} (${localEvent.eventVotes[idea.id]||0} event votes)`).join("\n");
+    try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:`You are an innovation judge for "${localEvent.title}" (Theme: ${localEvent.theme}).\n\nTop ideas:\n${lines}\n\nProvide: 1) Top 3 recommended winners with brief justification 2) One honorable mention 3) Key criteria that made top ideas stand out. Be concise and decisive.`}]})});
+    const d=await r.json();setAiRecs(d.content?.[0]?.text||"Could not load.");}catch{setAiRecs("Unable to connect. Try again.");}setAiLoading(false);
+  };
+  const handleAnnounce=()=>{onAnnounceWinners(localEvent.id,winnerPicks);setAnnounced(true);setLocalEvent(e=>({...e,winners:winnerPicks,announced:true,status:"completed"}));setTab("winners")};
+
+  return <div style={{position:"fixed",inset:0,background:"rgba(15,27,45,0.6)",zIndex:1500,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}><div style={{background:"#fff",borderRadius:22,width:"100%",maxWidth:820,maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"0 32px 80px rgba(15,27,45,0.3)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:`linear-gradient(135deg,${COLORS.primary},#0D47A1)`,padding:"24px 28px 0",color:"#fff"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+        <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{fontSize:40}}>{localEvent.banner}</div><div><div style={{fontSize:20,fontWeight:800,lineHeight:1.2}}>{localEvent.title}</div><div style={{fontSize:13,color:"rgba(255,255,255,0.7)",marginTop:3}}>Theme: {localEvent.theme} · By {localEvent.organizer}</div><div style={{marginTop:8}}><span style={{fontSize:11,fontWeight:700,padding:"4px 12px",borderRadius:20,background:es.bg,color:es.text}}>{es.label}</span></div></div></div>
+        <button onClick={onClose} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:18,padding:"3px 11px"}}>✕</button>
+      </div>
+      <div style={{display:"flex",gap:2,overflowX:"auto"}}>{tabs.map(([t,l])=><button key={t} onClick={()=>setTab(t)} style={{padding:"10px 18px",border:"none",background:"none",color:tab===t?"#fff":"rgba(255,255,255,0.55)",fontWeight:tab===t?700:500,fontSize:13,borderBottom:tab===t?"2.5px solid #fff":"2.5px solid transparent",cursor:"pointer",whiteSpace:"nowrap"}}>{l}</button>)}</div>
+    </div>
+    <div style={{flex:1,overflowY:"auto",padding:"24px 28px"}}>
+      {tab==="detail"&&<div style={{display:"flex",flexDirection:"column",gap:18}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>{[{label:"Submissions",value:localEvent.submissions.length,icon:"💡",color:COLORS.accent},{label:"Registered",value:localEvent.registrations.length,icon:"👥",color:COLORS.green},{label:"Total Votes",value:totalVotes,icon:"🗳️",color:COLORS.purple}].map(({label,value,icon,color})=><div key={label} style={{background:COLORS.lightBg,borderRadius:14,padding:"16px",textAlign:"center",border:`1px solid ${COLORS.border}`}}><div style={{fontSize:26}}>{icon}</div><div style={{fontSize:24,fontWeight:800,color,marginTop:4}}>{value}</div><div style={{fontSize:11,color:COLORS.muted,fontWeight:600,marginTop:2}}>{label}</div></div>)}</div>
+        <div style={{padding:"16px 20px",background:COLORS.lightBg,borderRadius:14,border:`1px solid ${COLORS.border}`}}><div style={{fontSize:13,fontWeight:700,color:COLORS.navy,marginBottom:8}}>📋 About this event</div><div style={{fontSize:13,color:"#445566",lineHeight:1.7,marginBottom:12}}>{localEvent.description}</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:12}}>{[{label:"📅 Start",value:localEvent.startDate},{label:"🏁 End",value:localEvent.endDate},{label:"🗳️ Voting Deadline",value:localEvent.votingDeadline},{label:"🎁 Prize",value:localEvent.prize}].map(({label,value})=><div key={label} style={{padding:"10px 14px",background:"#fff",borderRadius:10,border:`1px solid ${COLORS.border}`}}><div style={{color:COLORS.muted,marginBottom:2}}>{label}</div><div style={{fontWeight:700,color:COLORS.navy}}>{value}</div></div>)}</div></div>
+        {!isReg&&localEvent.status==="active"&&<button onClick={()=>{onSubmitToEvent("register",localEvent.id,currentUser.name);setLocalEvent(e=>({...e,registrations:[...e.registrations,currentUser.name]}))}} style={{padding:"13px",borderRadius:12,background:COLORS.accent,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:14}}>✅ Register for this Event</button>}
+        {isReg&&<div style={{padding:"12px 18px",background:"#E8F5E9",borderRadius:12,border:"1px solid #A5D6A7",fontSize:13,fontWeight:600,color:COLORS.green}}>✅ You're registered!</div>}
+        {localEvent.status==="active"&&isReg&&<div style={{padding:"14px 18px",background:"#FFF8E1",borderRadius:12,border:`1px solid ${COLORS.gold}`}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#7D5A00",marginBottom:8}}>📤 Submit an idea to this event</div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            {ideas.filter(i=>!localEvent.submissions.includes(i.id)&&localEvent.eligibleCategories.includes(i.category)).map(idea=><div key={idea.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"#fff",borderRadius:10,border:`1px solid ${COLORS.border}`}}><div style={{flex:1,fontSize:13,fontWeight:600,color:COLORS.navy}}>{idea.title}</div><Pill color={catColors[idea.category].text} bg={catColors[idea.category].bg}>{idea.category}</Pill><button onClick={()=>{onSubmitToEvent("add",localEvent.id,idea.id);setLocalEvent(e=>({...e,submissions:[...e.submissions,idea.id],eventVotes:{...e.eventVotes,[idea.id]:0}}))}} style={{padding:"6px 14px",borderRadius:8,background:COLORS.accent,border:"none",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer"}}>Add →</button></div>)}
+            {ideas.filter(i=>!localEvent.submissions.includes(i.id)&&localEvent.eligibleCategories.includes(i.category)).length===0&&<div style={{fontSize:13,color:COLORS.muted,textAlign:"center",padding:"8px 0"}}>All eligible ideas are already submitted.</div>}
+          </div>
+        </div>}
+      </div>}
+
+      {tab==="ideas"&&<div style={{display:"flex",flexDirection:"column",gap:14}}>
+        {submitted.length===0&&<div style={{color:COLORS.muted,textAlign:"center",padding:"32px 0",fontSize:14}}>No ideas submitted yet.</div>}
+        {submitted.map(idea=>{
+          const evVotes=localEvent.eventVotes[idea.id]||0,evPct=totalVotes>0?Math.round((evVotes/totalVotes)*100):0,hasVoted=evVoted[idea.id];
+          return <div key={idea.id} style={{background:"#fff",border:`1px solid ${COLORS.border}`,borderRadius:14,padding:"16px 20px",display:"flex",flexDirection:"column",gap:10}}>
+            <div style={{display:"flex",alignItems:"flex-start",gap:10}}><Av letter={idea.avatar} color={idea.avatarColor} size={36}/><div style={{flex:1}}><div style={{fontSize:15,fontWeight:700,color:COLORS.navy,marginBottom:3}}>{idea.title}</div><div style={{fontSize:12,color:"#445566",lineHeight:1.5}}>{idea.shortDesc}</div></div><div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:22,fontWeight:800,color:COLORS.purple}}>{evVotes}</div><div style={{fontSize:10,color:COLORS.muted}}>event votes</div></div></div>
+            <div style={{display:"flex",alignItems:"center",gap:10}}><div style={{flex:1,height:6,borderRadius:3,background:"#E0E8F0",overflow:"hidden"}}><div style={{height:"100%",width:`${evPct}%`,background:COLORS.purple,borderRadius:3,transition:"width 0.4s"}}/></div><span style={{fontSize:11,color:COLORS.muted,minWidth:32}}>{evPct}%</span>{localEvent.status==="voting"&&<button onClick={()=>handleEvVote(idea.id)} disabled={hasVoted} style={{padding:"7px 18px",borderRadius:20,background:hasVoted?"#E8F5E9":COLORS.accent,border:`1.5px solid ${hasVoted?COLORS.green:COLORS.accent}`,color:hasVoted?COLORS.green:"#fff",fontSize:12,fontWeight:700,cursor:hasVoted?"default":"pointer"}}>{hasVoted?"✓ Voted":"🗳️ Vote"}</button>}</div>
+          </div>;
+        })}
+      </div>}
+
+      {tab==="leaderboard"&&<div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <div style={{fontSize:13,color:COLORS.muted,marginBottom:4}}>Ranked by event votes.</div>
+        {ranked.map((idea,index)=>{
+          const evVotes=localEvent.eventVotes[idea.id]||0,evPct=totalVotes>0?Math.round((evVotes/totalVotes)*100):0;
+          const isWin=(localEvent.winners.length>0?localEvent.winners:winnerPicks).includes(idea.id);
+          const medal=index===0?"🥇":index===1?"🥈":index===2?"🥉":"";
+          return <div key={idea.id} style={{background:isWin?"linear-gradient(135deg,#FFF8E1,#FFFDE7)":"#fff",border:`1.5px solid ${isWin?COLORS.gold:COLORS.border}`,borderRadius:14,padding:"16px 20px",display:"flex",alignItems:"center",gap:14}}>
+            <div style={{fontSize:28,minWidth:40,textAlign:"center"}}>{medal||`#${index+1}`}</div><Av letter={idea.avatar} color={idea.avatarColor} size={40}/>
+            <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:COLORS.navy}}>{idea.title}</div><div style={{fontSize:12,color:COLORS.muted,marginTop:2}}>{idea.author} · {idea.category}</div><div style={{marginTop:6,height:5,borderRadius:3,background:"#E0E8F0",overflow:"hidden"}}><div style={{height:"100%",width:`${evPct}%`,background:isWin?COLORS.gold:COLORS.purple,borderRadius:3}}/></div></div>
+            <div style={{textAlign:"right"}}><div style={{fontSize:24,fontWeight:800,color:isWin?COLORS.gold:COLORS.purple}}>{evVotes}</div><div style={{fontSize:10,color:COLORS.muted}}>votes · {evPct}%</div>{isWin&&<div style={{fontSize:11,fontWeight:700,color:COLORS.gold,marginTop:4}}>🏆 Winner</div>}</div>
+          </div>;
+        })}
+        {!announced&&ranked.length>=1&&<div style={{marginTop:8,padding:"16px 20px",background:COLORS.lightBg,borderRadius:14,border:`1px solid ${COLORS.border}`}}>
+          <div style={{fontSize:13,fontWeight:700,color:COLORS.navy,marginBottom:10}}>🏆 Select & Announce Winners</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12}}>{ranked.map(idea=>{const picked=winnerPicks.includes(idea.id);return <button key={idea.id} onClick={()=>setWinnerPicks(p=>picked?p.filter(x=>x!==idea.id):[...p,idea.id])} style={{padding:"7px 14px",borderRadius:20,border:`2px solid ${picked?COLORS.gold:COLORS.border}`,background:picked?"#FFF8E1":"#fff",color:picked?"#7D5A00":COLORS.muted,fontWeight:picked?700:500,cursor:"pointer",fontSize:12}}>{picked?"★ ":""}{idea.title.slice(0,28)}{idea.title.length>28?"…":""}</button>})}</div>
+          <button onClick={handleAnnounce} disabled={winnerPicks.length===0} style={{padding:"11px 28px",borderRadius:12,background:winnerPicks.length>0?COLORS.gold:COLORS.border,border:"none",color:"#fff",fontWeight:700,cursor:winnerPicks.length>0?"pointer":"default",fontSize:14}}>🎉 Announce Winners ({winnerPicks.length} selected)</button>
+        </div>}
+      </div>}
+
+      {tab==="winners"&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        {((localEvent.winners.length>0||winnerPicks.length>0)&&announced)?(
+          <><div style={{padding:"24px",background:"linear-gradient(135deg,#FFF8E1,#FFFDE7)",borderRadius:18,border:`2px solid ${COLORS.gold}`,textAlign:"center"}}><div style={{fontSize:48,marginBottom:8}}>🎊</div><div style={{fontSize:22,fontWeight:800,color:"#7D5A00",marginBottom:6}}>Winners Announced!</div><div style={{fontSize:14,color:"#8D6E00"}}>{localEvent.title} · {localEvent.theme}</div></div>
+          {(localEvent.winners.length>0?localEvent.winners:winnerPicks).map((wid,index)=>{
+            const idea=ideas.find(i=>i.id===wid);if(!idea)return null;
+            const medals=["🥇","🥈","🥉"];
+            return <div key={wid} style={{background:"linear-gradient(135deg,#FFF8E1,#FFFDE7)",border:`2px solid ${COLORS.gold}`,borderRadius:16,padding:"20px 24px",display:"flex",alignItems:"center",gap:16}}>
+              <div style={{fontSize:44}}>{medals[index]||"🏅"}</div><Av letter={idea.avatar} color={idea.avatarColor} size={52}/>
+              <div style={{flex:1}}><div style={{fontSize:16,fontWeight:800,color:COLORS.navy,marginBottom:4}}>{idea.title}</div><div style={{fontSize:13,color:"#445566",marginBottom:6}}>{idea.shortDesc}</div><div style={{display:"flex",gap:8,flexWrap:"wrap"}}><Pill color={catColors[idea.category].text} bg={catColors[idea.category].bg}>{idea.category}</Pill><Pill color={COLORS.muted} bg={COLORS.lightBg}>{idea.author}</Pill></div></div>
+              <div style={{textAlign:"right"}}><div style={{fontSize:28,fontWeight:800,color:COLORS.gold}}>{localEvent.eventVotes[idea.id]||0}</div><div style={{fontSize:11,color:COLORS.muted}}>event votes</div></div>
+            </div>;
+          })}
+          <div style={{padding:"16px 20px",background:COLORS.lightBg,borderRadius:14,border:`1px solid ${COLORS.border}`}}><div style={{fontSize:13,fontWeight:700,color:COLORS.navy,marginBottom:6}}>🎁 Prize</div><div style={{fontSize:14,color:"#445566"}}>{localEvent.prize}</div></div></>
+        ):<div style={{color:COLORS.muted,textAlign:"center",padding:"40px 0",fontSize:14}}>Winners haven't been announced yet. Go to Leaderboard to select and announce winners.</div>}
+      </div>}
+
+      {tab==="ai"&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        <div style={{padding:"16px 20px",background:"linear-gradient(135deg,#E3F2FD,#EDE7F6)",borderRadius:14,border:"1px solid #B3C9F0"}}><div style={{fontSize:14,fontWeight:700,color:COLORS.primary,marginBottom:6}}>🤖 AI Innovation Judge</div><div style={{fontSize:13,color:"#445566",lineHeight:1.6}}>Let AI analyze submissions and recommend winners based on innovation, feasibility, and alignment with theme: <strong>{localEvent.theme}</strong>.</div></div>
+        <button onClick={fetchAI} disabled={aiLoading||ranked.length===0} style={{padding:"12px 24px",borderRadius:12,background:aiLoading||ranked.length===0?COLORS.muted:COLORS.accent,border:"none",color:"#fff",fontWeight:700,cursor:aiLoading||ranked.length===0?"default":"pointer",fontSize:14}}>{aiLoading?"⏳ Judging submissions…":"✨ Get AI Winner Recommendations"}</button>
+        {ranked.length===0&&<div style={{color:COLORS.muted,fontSize:13,textAlign:"center"}}>No submissions yet to judge.</div>}
+        {aiRecs&&<div style={{padding:"20px",background:"#fff",borderRadius:14,border:`1px solid ${COLORS.border}`}}><div style={{fontSize:12,fontWeight:700,color:COLORS.accent,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>AI Judge Recommendations</div><div style={{fontSize:13,color:"#334455",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiRecs}</div></div>}
+      </div>}
+    </div>
+  </div></div>
+}
+
+function CreateEventModal({onClose,onCreate}){
+  const banners=["🏆","🚀","💡","🌱","⚡","🎯","🔥","🌍","🤖","🎨"];
+  const [form,setForm]=useState({title:"",theme:"",description:"",startDate:"",endDate:"",votingDeadline:"",prize:"",eligibleCategories:["Business","Technical"],maxSubmissions:20,banner:"🏆"});
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const toggleCat=(cat)=>set("eligibleCategories",form.eligibleCategories.includes(cat)?form.eligibleCategories.filter(c=>c!==cat):[...form.eligibleCategories,cat]);
+  const valid=form.title&&form.theme&&form.description&&form.startDate&&form.endDate&&form.prize;
+  return <div style={{position:"fixed",inset:0,background:"rgba(15,27,45,0.6)",zIndex:2500,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}><div style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:640,maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:"0 24px 64px rgba(15,27,45,0.25)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:`linear-gradient(135deg,${COLORS.primary},#0D47A1)`,padding:"22px 28px",color:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:18,fontWeight:800}}>🏆 Create Ideation Event</div><div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginTop:2}}>Set up a new innovation competition</div></div><button onClick={onClose} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:18,padding:"2px 10px"}}>✕</button></div>
+    <div style={{flex:1,overflowY:"auto",padding:"24px 28px",display:"flex",flexDirection:"column",gap:16}}>
+      <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:8}}>Event Banner</div><div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{banners.map(b=><button key={b} onClick={()=>set("banner",b)} style={{width:44,height:44,borderRadius:10,border:`2px solid ${form.banner===b?COLORS.accent:COLORS.border}`,background:form.banner===b?"#E3F2FD":"#fff",fontSize:24,cursor:"pointer"}}>{b}</button>)}</div></div>
+      {[{label:"Event Title *",key:"title",placeholder:"e.g. Q3 Innovation Sprint"},{label:"Theme *",key:"theme",placeholder:"e.g. AI & Automation"}].map(({label,key,placeholder})=><div key={key}><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>{label}</div><input value={form[key]} onChange={e=>set(key,e.target.value)} placeholder={placeholder} style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,boxSizing:"border-box",fontFamily:"inherit"}}/></div>)}
+      <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>Description *</div><textarea value={form.description} onChange={e=>set("description",e.target.value)} placeholder="What's this event about? What ideas are you looking for?" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,resize:"vertical",minHeight:80,boxSizing:"border-box",fontFamily:"inherit"}}/></div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>{[{label:"Start Date *",key:"startDate"},{label:"End Date *",key:"endDate"},{label:"Voting Deadline",key:"votingDeadline"}].map(({label,key})=><div key={key}><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>{label}</div><input type="date" value={form[key]} onChange={e=>set(key,e.target.value)} style={{width:"100%",padding:"10px 12px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,boxSizing:"border-box",fontFamily:"inherit"}}/></div>)}</div>
+      <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:6}}>Prize / Recognition *</div><input value={form.prize} onChange={e=>set("prize",e.target.value)} placeholder="e.g. $5,000 implementation budget" style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${COLORS.border}`,fontSize:13,boxSizing:"border-box",fontFamily:"inherit"}}/></div>
+      <div><div style={{fontSize:12,fontWeight:700,color:COLORS.navy,marginBottom:8}}>Eligible Categories</div><div style={{display:"flex",gap:10}}>{["Business","Technical"].map(cat=>{const active=form.eligibleCategories.includes(cat);return<button key={cat} onClick={()=>toggleCat(cat)} style={{flex:1,padding:"10px",borderRadius:10,border:`2px solid ${active?COLORS.accent:COLORS.border}`,background:active?"#E3F2FD":"#fff",color:active?COLORS.accent:COLORS.muted,fontWeight:700,cursor:"pointer",fontSize:13}}>{cat==="Business"?"💼 Business":"⚙️ Technical"}</button>})}</div></div>
+      <button disabled={!valid} onClick={()=>{onCreate(form);onClose()}} style={{padding:"13px",borderRadius:12,background:valid?COLORS.gold:COLORS.border,border:"none",color:"#fff",fontWeight:700,cursor:valid?"pointer":"default",fontSize:15}}>🚀 Launch Event</button>
+    </div>
+  </div></div>
+}
+
+function EventsPage({events,ideas,currentUser,onVoteIdea,onSubmitToEvent,onAnnounceWinners,onCreateEvent}){
+  const [selEv,setSelEv]=useState(null),[showCreate,setShowCreate]=useState(false);
+  const active=events.filter(e=>e.status==="active"),voting=events.filter(e=>e.status==="voting"),completed=events.filter(e=>e.status==="completed");
+  return <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
+    <div style={{background:`linear-gradient(135deg,${COLORS.primary},#0D47A1)`,borderRadius:20,padding:"32px 36px",color:"#fff",marginBottom:28,position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",top:-20,right:-20,fontSize:120,opacity:0.07}}>🏆</div>
+      <div style={{fontSize:28,fontWeight:800,marginBottom:8}}>🏆 Ideation Events</div>
+      <div style={{fontSize:15,color:"rgba(255,255,255,0.8)",lineHeight:1.6,maxWidth:600}}>Compete in time-boxed innovation challenges. Submit your best ideas, earn community votes, and see your ideas get implemented.</div>
+      <div style={{display:"flex",gap:24,marginTop:20}}>
+        {[{label:"Active Events",value:active.length,color:COLORS.teal},{label:"In Voting",value:voting.length,color:COLORS.gold},{label:"Completed",value:completed.length,color:"rgba(255,255,255,0.6)"}].map(({label,value,color})=><div key={label}><div style={{fontSize:28,fontWeight:800,color}}>{value}</div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)",fontWeight:600}}>{label.toUpperCase()}</div></div>)}
+        <div style={{flex:1}}/>
+        <button onClick={()=>setShowCreate(true)} style={{alignSelf:"center",padding:"12px 24px",borderRadius:22,background:COLORS.gold,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:14}}>+ Create Event</button>
+      </div>
+    </div>
+    {(active.length>0||voting.length>0)&&<><div style={{fontSize:16,fontWeight:800,color:COLORS.navy,marginBottom:14}}>🔴 Live Now</div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:18,marginBottom:32}}>{[...active,...voting].map(e=><EventCard key={e.id} event={e} ideas={ideas} onClick={setSelEv}/>)}</div></>}
+    {completed.length>0&&<><div style={{fontSize:16,fontWeight:800,color:COLORS.navy,marginBottom:14}}>✅ Past Events</div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:18}}>{completed.map(e=><EventCard key={e.id} event={e} ideas={ideas} onClick={setSelEv}/>)}</div></>}
+    {events.length===0&&<div style={{textAlign:"center",padding:"60px 0",color:COLORS.muted}}>No events yet. Create the first one! 🏆</div>}
+    {selEv&&<EventDetail event={selEv} ideas={ideas} currentUser={currentUser} onClose={()=>setSelEv(null)} onVoteIdea={onVoteIdea} onSubmitToEvent={onSubmitToEvent} onAnnounceWinners={(eid,w)=>{onAnnounceWinners(eid,w);setSelEv(prev=>({...prev,winners:w,announced:true,status:"completed"}))}}/>}
+    {showCreate&&<CreateEventModal onClose={()=>setShowCreate(false)} onCreate={onCreateEvent}/>}
+  </div>
+}
+
+// ── Main App ──────────────────────────────────────────────────────────────────
+function App(){
+  const [ideas,setIdeas]=useState(INITIAL_IDEAS),[events,setEvents]=useState(SAMPLE_EVENTS),[user,setUser]=useState(DEFAULT_USER);
+  const [page,setPage]=useState("feed"),[selected,setSelected]=useState(null),[showSubmit,setShowSubmit]=useState(false),[showProfile,setShowProfile]=useState(false);
+  const [userVotes,setUserVotes]=useState({}), [search,setSearch]=useState(""),[filterCat,setFilterCat]=useState("All"),[filterStatus,setFilterStatus]=useState("All"),[sort,setSort]=useState("top");
+  const [profileDropdown,setProfileDropdown]=useState(false);
+  const dropRef=useRef(null);
+
+  useEffect(()=>{const h=e=>{if(dropRef.current&&!dropRef.current.contains(e.target))setProfileDropdown(false)};document.addEventListener("mousedown",h);return()=>document.removeEventListener("mousedown",h)},[]);
+  useEffect(()=>{if(selected)setSelected(ideas.find(i=>i.id===selected.id)||null)},[ideas]);// eslint-disable-line
+
+  const handleVote=(id,type)=>setIdeas(prev=>prev.map(idea=>{if(idea.id!==id)return idea;const pv=userVotes[id];let{likes,dislikes}=idea;if(pv===type){if(type==="like")likes--;else dislikes--;setUserVotes(v=>({...v,[id]:null}))}else{if(pv==="like")likes--;if(pv==="dislike")dislikes--;if(type==="like")likes++;else dislikes++;setUserVotes(v=>({...v,[id]:type}))}return{...idea,likes,dislikes}}));
+  const handleAddComment=(id,text,cu)=>{const c={id:Date.now(),user:cu?.name||"You",avatar:cu?.avatar||"Y",color:cu?.avatarColor||COLORS.green,text,time:"Just now"};setIdeas(prev=>prev.map(i=>i.id===id?{...i,comments:[...i.comments,c]}:i));setSelected(prev=>prev?.id===id?{...prev,comments:[...prev.comments,c]}:prev)};
+  const handleAddSolution=(id,text)=>{const s={id:Date.now(),user:user.name,text,votes:0};setIdeas(prev=>prev.map(i=>i.id===id?{...i,solutions:[...i.solutions,s]}:i));setSelected(prev=>prev?.id===id?{...prev,solutions:[...prev.solutions,s]}:prev)};
+  const handleSubmitIdea=(form)=>setIdeas(prev=>[{id:Date.now(),title:form.title,category:form.category,shortDesc:form.shortDesc,detailDesc:form.detailDesc,example:form.example||"No example provided.",author:user.name,avatar:user.avatar,avatarColor:user.avatarColor,likes:0,dislikes:0,comments:[],solutions:[],tags:form.tags?form.tags.split(",").map(t=>t.trim()).filter(Boolean):[],status:"Open",date:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})},...prev]);
+  const handleEventVote=(eventId,ideaId)=>setEvents(prev=>prev.map(e=>e.id!==eventId?e:{...e,eventVotes:{...e.eventVotes,[ideaId]:(e.eventVotes[ideaId]||0)+1}}));
+  const handleSubmitToEvent=(action,eventId,payload)=>setEvents(prev=>prev.map(e=>{if(e.id!==eventId)return e;if(action==="add")return{...e,submissions:[...e.submissions,payload],eventVotes:{...e.eventVotes,[payload]:0}};if(action==="register")return{...e,registrations:[...e.registrations,payload]};return e}));
+  const handleAnnounceWinners=(eventId,winners)=>setEvents(prev=>prev.map(e=>e.id!==eventId?e:{...e,winners,announced:true,status:"completed"}));
+  const handleCreateEvent=(form)=>setEvents(prev=>[{id:Date.now(),...form,status:"active",submissions:[],eventVotes:{},winners:[],announced:false,registrations:[user.name]},...prev]);
+
+  const filtered=ideas.filter(i=>filterCat==="All"||i.category===filterCat).filter(i=>filterStatus==="All"||i.status===filterStatus).filter(i=>!search||i.title.toLowerCase().includes(search.toLowerCase())||i.shortDesc.toLowerCase().includes(search.toLowerCase())||i.tags.some(t=>t.toLowerCase().includes(search.toLowerCase()))).sort((a,b)=>sort==="top"?(b.likes-b.dislikes)-(a.likes-a.dislikes):sort==="newest"?b.id-a.id:b.comments.length-a.comments.length);
+  const activeEvCount=events.filter(e=>e.status==="active"||e.status==="voting").length;
+
+  return <div style={{minHeight:"100vh",background:COLORS.lightBg,fontFamily:"'Segoe UI',system-ui,-apple-system,sans-serif"}}>
+    {/* Header */}
+    <div style={{background:COLORS.primary,padding:"0 24px",boxShadow:"0 2px 16px rgba(15,27,45,0.2)",position:"sticky",top:0,zIndex:100}}>
+      <div style={{maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"center",gap:16,height:64}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={()=>setPage("feed")}><span style={{fontSize:24}}>💡</span><div><div style={{fontSize:16,fontWeight:800,color:"#fff"}}>MM Ideation Hub</div><div style={{fontSize:9,color:COLORS.teal,fontWeight:600,letterSpacing:0.8}}>WHERE IDEAS COME TO LIFE</div></div></div>
+        <div style={{display:"flex",gap:2,marginLeft:8}}>
+          {[["feed","💡 Ideas"],["events","🏆 Events"]].map(([p,l])=><button key={p} onClick={()=>setPage(p)} style={{padding:"8px 16px",border:"none",background:page===p?"rgba(255,255,255,0.18)":"none",borderRadius:10,color:page===p?"#fff":"rgba(255,255,255,0.6)",fontWeight:page===p?700:500,fontSize:13,cursor:"pointer",position:"relative"}}>
+            {l}{p==="events"&&activeEvCount>0&&<span style={{position:"absolute",top:4,right:4,width:16,height:16,borderRadius:"50%",background:COLORS.gold,color:"#fff",fontSize:9,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center"}}>{activeEvCount}</span>}
+          </button>)}
+        </div>
+        {page==="feed"&&<div style={{flex:1,maxWidth:320,position:"relative"}}><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search ideas, tags..." style={{width:"100%",padding:"9px 14px 9px 36px",borderRadius:24,border:"none",background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:13,boxSizing:"border-box",outline:"none",fontFamily:"inherit"}}/><span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:14,opacity:0.6}}>🔍</span></div>}
+        <div style={{flex:1}}/>
+        <div style={{fontSize:13,color:"rgba(255,255,255,0.65)",display:"flex",gap:12}}><span><span style={{color:"#fff",fontWeight:700}}>{ideas.length}</span> ideas</span><span><span style={{color:COLORS.teal,fontWeight:700}}>{ideas.reduce((s,i)=>s+i.likes,0)}</span> likes</span></div>
+        {page==="feed"&&<button onClick={()=>setShowSubmit(true)} style={{padding:"8px 18px",borderRadius:22,background:COLORS.accent,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:13,whiteSpace:"nowrap"}}>+ Submit Idea</button>}
+        <div ref={dropRef} style={{position:"relative"}}>
+          <button onClick={()=>setProfileDropdown(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 12px 5px 5px",borderRadius:24,border:"1.5px solid rgba(255,255,255,0.2)",background:profileDropdown?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)",cursor:"pointer"}}>
+            <Av letter={user.avatar} color={user.avatarColor} size={32}/><div style={{textAlign:"left"}}><div style={{fontSize:12,fontWeight:700,color:"#fff",lineHeight:1.2}}>{user.name.split(" ")[0]}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.55)",lineHeight:1.2}}>{user.department}</div></div><span style={{color:"rgba(255,255,255,0.5)",fontSize:10,marginLeft:2}}>▾</span>
+          </button>
+          {profileDropdown&&<div style={{position:"absolute",top:"calc(100% + 10px)",right:0,background:"#fff",borderRadius:14,boxShadow:"0 12px 40px rgba(15,27,45,0.2)",border:`1px solid ${COLORS.border}`,width:240,zIndex:200,overflow:"hidden"}}>
+            <div style={{padding:"16px 18px",background:COLORS.lightBg,borderBottom:`1px solid ${COLORS.border}`}}><div style={{display:"flex",alignItems:"center",gap:10}}><Av letter={user.avatar} color={user.avatarColor} size={42}/><div><div style={{fontSize:14,fontWeight:700,color:COLORS.navy}}>{user.name}</div><div style={{fontSize:11,color:COLORS.muted}}>{user.role}</div>{(()=>{const s=computeStats(user,ideas,userVotes,events);const eb=getUserBadges(s);const tb=getTopTierBadge(eb);return tb?<div style={{marginTop:4}}><BadgeChip badge={tb} size="sm"/></div>:<div style={{fontSize:10,color:COLORS.muted,marginTop:2}}>{eb.length} badge{eb.length!==1?"s":""} earned</div>})()}</div></div>{user.bio&&<div style={{fontSize:11,color:COLORS.muted,marginTop:8,lineHeight:1.5,fontStyle:"italic"}}>"{user.bio.slice(0,60)}…"</div>}</div>
+            <div style={{display:"flex",padding:"10px 18px",gap:16,borderBottom:`1px solid ${COLORS.border}`}}>{[{label:"Ideas",value:ideas.filter(i=>i.author===user.name).length,color:COLORS.accent},{label:"Votes",value:Object.values(userVotes).filter(Boolean).length,color:COLORS.purple},{label:"Likes",value:ideas.filter(i=>i.author===user.name).reduce((s,i)=>s+i.likes,0),color:COLORS.green}].map(({label,value,color})=><div key={label} style={{textAlign:"center",flex:1}}><div style={{fontSize:16,fontWeight:800,color}}>{value}</div><div style={{fontSize:10,color:COLORS.muted,fontWeight:600}}>{label}</div></div>)}</div>
+            {[{icon:"👤",label:"Edit Profile"},{icon:"📊",label:"My Activity"},{icon:"🔔",label:"Notifications"},{icon:"🎨",label:"Appearance"}].map(({icon,label})=><button key={label} onClick={()=>{setShowProfile(true);setProfileDropdown(false)}} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"11px 18px",border:"none",background:"none",cursor:"pointer",fontSize:13,color:COLORS.navy,textAlign:"left"}} onMouseEnter={e=>e.currentTarget.style.background=COLORS.lightBg} onMouseLeave={e=>e.currentTarget.style.background="none"}><span>{icon}</span>{label}</button>)}
+            <div style={{borderTop:`1px solid ${COLORS.border}`}}><button style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"11px 18px",border:"none",background:"none",cursor:"pointer",fontSize:13,color:COLORS.red}} onMouseEnter={e=>e.currentTarget.style.background="#FFEBEE"} onMouseLeave={e=>e.currentTarget.style.background="none"}><span>🚪</span>Sign Out</button></div>
+          </div>}
+        </div>
+      </div>
+    </div>
+
+    {page==="events"&&<EventsPage events={events} ideas={ideas} currentUser={user} onVoteIdea={handleEventVote} onSubmitToEvent={handleSubmitToEvent} onAnnounceWinners={handleAnnounceWinners} onCreateEvent={handleCreateEvent}/>}
+
+    {page==="feed"&&<div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
+      <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap",alignItems:"center"}}>
+        <div style={{display:"flex",gap:6}}>{["All","Business","Technical"].map(c=><button key={c} onClick={()=>setFilterCat(c)} style={{padding:"7px 15px",borderRadius:20,border:`1.5px solid ${filterCat===c?COLORS.accent:COLORS.border}`,background:filterCat===c?"#E3F2FD":"#fff",color:filterCat===c?COLORS.accent:COLORS.muted,fontWeight:filterCat===c?700:500,cursor:"pointer",fontSize:12}}>{c}</button>)}</div>
+        <div style={{display:"flex",gap:6}}>{["All","Open","In Review","Solved"].map(s=><button key={s} onClick={()=>setFilterStatus(s)} style={{padding:"7px 15px",borderRadius:20,border:`1.5px solid ${filterStatus===s?COLORS.purple:COLORS.border}`,background:filterStatus===s?"#F3E5F5":"#fff",color:filterStatus===s?COLORS.purple:COLORS.muted,fontWeight:filterStatus===s?700:500,cursor:"pointer",fontSize:12}}>{s}</button>)}</div>
+        <div style={{flex:1}}/>
+        <div style={{display:"flex",gap:6}}><span style={{fontSize:12,color:COLORS.muted,alignSelf:"center"}}>Sort:</span>{[["top","🔥 Top"],["newest","🆕 Newest"],["discussed","💬 Active"]].map(([v,l])=><button key={v} onClick={()=>setSort(v)} style={{padding:"7px 13px",borderRadius:20,border:`1.5px solid ${sort===v?COLORS.gold:COLORS.border}`,background:sort===v?"#FFFDE7":"#fff",color:sort===v?"#B8860B":COLORS.muted,fontWeight:sort===v?700:500,cursor:"pointer",fontSize:12}}>{l}</button>)}</div>
+      </div>
+      <div style={{display:"flex",gap:12,marginBottom:20}}>{[{label:"Total Ideas",value:ideas.length,color:COLORS.accent},{label:"Open",value:ideas.filter(i=>i.status==="Open").length,color:COLORS.green},{label:"In Review",value:ideas.filter(i=>i.status==="In Review").length,color:COLORS.gold},{label:"Solved",value:ideas.filter(i=>i.status==="Solved").length,color:COLORS.purple}].map(({label,value,color})=><div key={label} style={{flex:1,background:"#fff",borderRadius:12,padding:"14px 16px",border:`1px solid ${COLORS.border}`}}><div style={{fontSize:22,fontWeight:800,color}}>{value}</div><div style={{fontSize:11,color:COLORS.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:0.5}}>{label}</div></div>)}</div>
+      {activeEvCount>0&&<div onClick={()=>setPage("events")} style={{padding:"14px 20px",background:"linear-gradient(135deg,#FFF8E1,#FFFDE7)",borderRadius:14,border:`1.5px solid ${COLORS.gold}`,marginBottom:20,cursor:"pointer",display:"flex",alignItems:"center",gap:14}} onMouseEnter={e=>e.currentTarget.style.boxShadow="0 4px 16px rgba(243,156,18,0.2)"} onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}><span style={{fontSize:28}}>🏆</span><div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#7D5A00"}}>{activeEvCount} Active Ideation Event{activeEvCount>1?"s":""} — Submit your ideas now!</div><div style={{fontSize:12,color:"#8D6E00",marginTop:2}}>Compete for prizes and implementation resources</div></div><span style={{fontSize:13,fontWeight:700,color:"#7D5A00"}}>View Events →</span></div>}
+      {user.interests?.length>0&&<div style={{padding:"12px 18px",background:"#fff",borderRadius:12,border:`1px solid ${COLORS.border}`,marginBottom:20,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}><span style={{fontSize:12,fontWeight:700,color:COLORS.navy}}>🎯 Your interests:</span>{user.interests.map(i=><span key={i} style={{fontSize:11,padding:"3px 10px",borderRadius:14,background:"#EEF4FF",color:COLORS.accent,fontWeight:600}}>{i}</span>)}<button onClick={()=>setShowProfile(true)} style={{marginLeft:"auto",fontSize:11,color:COLORS.muted,background:"none",border:"none",cursor:"pointer",textDecoration:"underline"}}>Edit interests</button></div>}
+      {filtered.length===0?<div style={{textAlign:"center",padding:"60px 0",color:COLORS.muted,fontSize:15}}>No ideas match your filters. 💡</div>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:18}}>{filtered.map(idea=><IdeaCard key={idea.id} idea={idea} onClick={setSelected} userVotes={userVotes} onVote={handleVote}/>)}</div>}
+    </div>}
+
+    {selected&&<IdeaModal idea={selected} onClose={()=>setSelected(null)} userVotes={userVotes} onVote={handleVote} onAddComment={handleAddComment} onAddSolution={handleAddSolution} currentUser={user}/>}
+    {showSubmit&&<SubmitModal onClose={()=>setShowSubmit(false)} onSubmit={handleSubmitIdea} currentUser={user}/>}
+    {showProfile&&<ProfileModal user={user} ideas={ideas} userVotes={userVotes} events={events} onClose={()=>setShowProfile(false)} onSave={updated=>setUser(updated)}/>}
+  </div>
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>

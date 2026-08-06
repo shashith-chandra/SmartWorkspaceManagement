@@ -1,0 +1,2 @@
+[19820:14992:0326/152658.122:VERBOSE1:installer.cc(488)] "C:\Users\mmv6671\OneDrive - MassMutual\Downloads\ChromeSetup.exe" --install=appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={672852D3-DD06-C969-F79C-6A4BDF897C52}&lang=en-GB&browser=5&usagestats=1&appname=Google%20Chrome&needsadmin=prefers&ap=x64-statsdef_1&installdataindex=empty --enable-logging --vmodule=*/components/winhttp/*=1,*/components/update_client/*=2,*/chrome/enterprise_companion/*=2,*/chrome/updater/*=2
+[19820:14992:0326/152801.472:VERBOSE1:installer.cc(605)] Metainstaller WMain returning: 0
