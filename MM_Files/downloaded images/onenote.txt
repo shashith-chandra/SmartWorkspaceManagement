@@ -1,0 +1,495 @@
+financial products
+unival consolidates the activities and puts into buckets => sends transactions down to fund linx
+FL -> interlinks to dtcc
+trades
+following day we get the prices from dtcc-> go to unival
+determine the investments increasing or decreasing based on how marketis doing, unival publishes to admin systems
+Trade files sent to trading partners
+
+4534-Variable anuity variable life (VAVL)
+4545-RMA 
+
+--=================================================
+⚙️ 1. Array / Two Pointers / Sliding Window
+	► Pattern / Algo Used For Example Problems
+	² Two Pointers Pair / subarray problems with sorted arrays 3Sum, Remove Duplicates
+	² Fast–Slow Pointers Detecting cycles, linked list midpoints Linked List Cycle, Reorder List
+	² Sliding Window Substring/subarray problems Longest Substring Without Repeating Chars
+	² Prefix Sum Subarray sums, range queries Subarray Sum Equals K
+	² Difference Array Range updates efficiently Car Pooling, Range Addition
+	² Kadane’s Algorithm Maximum subarray sum Maximum Subarray
+	² Product Kadane (variant) Maximum product subarray Maximum Product Subarray
+	² Dutch National Flag / 3-way partition Sorting 0s,1s,2s or pivot partitioning Sort Colors
+	² Merge Intervals / Sweep Line Interval overlaps, timeline counting Merge Intervals, Meeting Rooms II
+	² Prefix Min/Max + Suffix Min/Max Range checks Trapping Rain Water, Good Days to Rob Bank
+🧮 2. Sorting + Searching
+	► Pattern Trick Example
+	² Binary Search (Basic) Find index, value, condition Search Rotated Sorted Array
+	² Binary Search on Answer Find optimal value satisfying condition Min Eating Speed, Split Array Largest Sum
+	² Custom Sort (Comparator) Sorting tuples, intervals Merge Intervals, Largest Number
+	² Coordinate Compression Map large numbers to compact indices Count of Smaller Numbers After Self
+	² Two Binary Searches Lower + upper bounds Count Occurrences in Sorted Array
+🧠 3. Dynamic Programming (DP)
+	► Category Key Trick Example
+	² 1D DP Subsequence / sum / partition problems House Robber, Climbing Stairs
+	² 2D DP (Grid) State transitions on (i,j) Unique Paths, Minimum Path Sum
+	² Substring DP Palindromes, subsequences Longest Palindromic Substring
+	² Knapsack Variants Subset sum, coin change Target Sum, Coin Change
+	² Prefix DP Build dp cumulatively Max Subarray Prefix Method
+	² State Compression Use bitmask for sets Traveling Salesman, Subset DP
+	² Buy/Sell Stocks DP Track buy/sell states Best Time to Buy and Sell Stock IV
+	² LIS / LDS (O(n log n)) Patience sorting Longest Increasing Subsequence
+	² Matrix DP Submatrices or rectangles Maximal Square, Dungeon Game
+🧱 4. Stack-Based Patterns
+	► Pattern Concept Example
+	² Monotonic Stack (Increasing) Next Greater Element / Range Bounds Daily Temperatures, Largest Rectangle in Histogram
+	² Monotonic Stack (Decreasing) Sliding window max/min Stock Span, Sum of Subarray Minimums
+	² Two Stack Expression Evaluation Calculators, RPN Basic Calculator II
+	² Stack for Parentheses Balancing, parsing Valid Parentheses, Longest Valid Parentheses
+🌳 5. Trees / BSTs
+	► Pattern Trick Example
+	² DFS (Inorder, Preorder, Postorder) Recursion or stack Binary Tree Traversals
+	² BFS / Level Order Queue traversal Binary Tree Level Order Traversal
+	² Inorder = Sorted (BST) Validation or kth smallest Validate BST, Kth Smallest Element
+	² Morris Traversal Inorder without stack/recursion Inorder Traversal (O(1) space)
+	² Lowest Common Ancestor (LCA) DFS recursion LCA of Binary Tree
+	² Serialize / Deserialize BFS or DFS encoding Codec for Binary Tree
+	² Prefix Sum in Tree Paths Path Sum problems Path Sum III
+🔁 6. Graph Algorithms
+	► Pattern Technique Example
+	² BFS / DFS Traversal / flood fill Number of Islands
+	² Topological Sort (Kahn or DFS) Ordering with dependencies Course Schedule
+	² Union-Find (DSU) Connected components Redundant Connection, Kruskal MST
+	² Dijkstra’s Algorithm Shortest path (weighted) Network Delay Time
+	² Bellman-Ford Detect negative cycles Cheapest Flights Within K Stops
+	² Floyd-Warshall All-pairs shortest path Find City With Smallest Reachable Neighbors
+	² Bipartite Check (Coloring) BFS/DFS coloring Is Graph Bipartite
+	² Backtracking Search Enumerate valid states Word Search, N-Queens
+💥 7. Greedy Algorithms
+	► Technique Common Use Example
+	² Activity Selection / Interval Scheduling Max non-overlapping intervals Non-overlapping Intervals
+	² Sort + Greedy Choice Always take best local move Jump Game II
+	² Heap-based Greedy Scheduling / merging Meeting Rooms II, Kth Largest Element
+	² Prefix Balancing Dynamic balance tracking Gas Station
+	² Mathematical Greedy Fractional / combinatorial Hand of Straights, Task Scheduler
+🧮 8. Math / Bit Manipulation
+	► Trick Example
+	² XOR properties (a^a=0) Single Number
+	² Prefix XOR Subarray XOR problems
+	² Bitmask Enumeration Subset problems
+	² Counting bits Counting Bits
+	² Fast Power / Modular Exponentiation Pow(x, n), ModPow
+	² GCD / LCM Check if groups divisible
+	² Sieve of Eratosthenes Count primes
+	² Prefix GCD/LCM arrays Simplify ratios
+	² Gray Code / Bit DP N-bit Gray Code
+🔤 9. Strings & Hashing
+	► Trick Usage Example
+	² Two Pointers on String Palindromes Valid Palindrome
+	² KMP / Z-Algorithm / Rabin-Karp Substring search Implement strStr()
+	² Rolling Hash Detect duplicates Repeated DNA Sequences
+	² Trie (Prefix Tree) Word lookups Word Search II
+	² Anagram grouping Frequency counting Group Anagrams
+	² Manacher’s Algorithm Longest Palindromic Substring —
+💾 10. Heap / Priority Queue
+	► Technique Example
+	² Min-heap for merging streams Merge K Sorted Lists
+	² Max-heap for top elements Kth Largest Element
+	² Two heaps (median maintenance) Median from Data Stream
+	² Heap scheduling Task Scheduler, Meeting Rooms II
+🧱 11. Advanced Patterns
+	► Category Concept Example
+	² Prefix & Suffix Products Transform arrays Product of Array Except Self
+	² Sweep Line (Events + Active Set) Interval overlaps Skyline Problem
+	² BIT / Segment Tree Range queries Count of Smaller Numbers After Self
+	² Reservoir Sampling Randomized selection Random Pick Index
+	² Backtracking with Pruning Combinatorial generation Combination Sum, Sudoku Solver
+	² Meet-in-the-Middle Split exponential search Subset Sum II
+	² Hashmap + Prefix Trick Count subarrays Subarray Sum Equals K
+🧩 12. Meta Problem-Solving Tricks
+	² Convert problem to prefix-sum space (for subarrays)
+	² Combine Sort + Greedy + Heap (for scheduling)
+	² Use DFS + Memoization (for top-down DP)
+	² Apply State Compression with Bitmask
+	² Think in reverse (e.g., build backward in Jump Game)
+	² Transform structure (e.g., convert array → graph)
+⚙️ 13. Advanced Data Structures
+	² Segment Tree / Lazy Propagation
+	² Fenwick Tree (BIT)
+	² Treap / AVL / Red-Black Tree
+	² Sparse Table
+	² Disjoint Set Union (with rollback)
+	² Persistent Segment Tree
+	² MO’s Algorithm
+	² Li Chao Tree (for DP line optimization)
+🔢 14. Number Theory
+	² Modular Arithmetic, Modular Inverse
+	² Chinese Remainder Theorem (CRT)
+	² Extended Euclidean Algorithm
+	² Fast Fourier Transform (FFT)
+	² Matrix Exponentiation
+	² Inclusion–Exclusion Principle
+	² Lucas Theorem
+	² Burnside’s Lemma / Polya’s Counting
+	² Mobius Inversion
+🧮 15. Advanced Dynamic Programming
+	² Digit DP
+	² Interval DP
+	² Bitmask DP
+	² DP on Trees
+	² DP on Graphs
+	² Convex Hull Trick / Li Chao Tree
+	² Divide & Conquer DP
+	² Knuth Optimization
+	² SOS DP (Sum over Subsets)
+🧭 16. Advanced Graphs
+	² Tarjan’s Algorithm (Bridges, Articulation Points)
+	² Kosaraju / SCC Decomposition
+	² 2-SAT with Implication Graphs
+	² LCA via Binary Lifting
+	² Euler Tour + Range Queries
+	² Centroid Decomposition
+	² Heavy-Light Decomposition
+	² DSU on Tree
+	² Min Cost Flow / Dinic / Edmonds-Karp
+	² Bipartite Matching / Hopcroft-Karp
+🧬 17. Geometry
+	² Cross Product / Orientation
+	² Convex Hull (Graham Scan, Andrew’s)
+	² Rotating Calipers
+	² Sweep Line for Geometry
+	² Polygon Area (Shoelace Formula)
+	² KD-Trees / Range Trees
+	² Point in Polygon / Ray Casting
+🧩 18. Advanced Strings
+	² Suffix Array + LCP Array
+	² Suffix Automaton
+	² Aho–Corasick Algorithm
+	² Rolling Hash + Rabin-Karp
+	² Z-function / Prefix Function (KMP)
+	² Suffix Tree (Ukkonen’s)
+	² Manacher’s Algorithm
+🎮 19. Game Theory
+	² Nim Game / Grundy Numbers
+	² Sprague–Grundy Theorem
+	² Minimax / Alpha-Beta Pruning
+	² Expectimax / Probabilistic DP
+	² Matrix Exponentiation for Games
+🧰 20. Meta Techniques
+	² Meet in the Middle
+	² Offline Query Processing (Mo’s Algorithm)
+	² Coordinate Compression + BIT
+	² Binary Search on State Space
+	² Backtracking + Heuristics
+	² Graph Transformations (Flow reduction)
+🧩 21. Hard Problem Combinations
+	² DP + Binary Search → Weighted Interval Scheduling
+	² Graph + DP on DAG → Longest Path
+	² Trie + DP → Word Break II
+	² Prefix Sum + Stack → Max Rectangle in Histogram
+	² Segment Tree + Sweep Line → Skyline Problem
+	² FFT + String Hash → Pattern Matching
+
+From <https://leetcode.com/discuss/post/7291857/patterns-for-each-topic-exclude-dp-as-it-9hg3/> 
+-- =========================================
+
+1. Advanced C#
+Not beginner questions.
+Expect topics like:
+	 async/await internals 
+	 Task vs Thread vs ThreadPool 
+	 ConfigureAwait(false) 
+	 Deadlocks 
+	 Span<T> 
+	 Memory<T> 
+	 IDisposable 
+	 IAsyncDisposable 
+	 Reflection 
+	 Expression Trees 
+	 Delegates 
+	 Events 
+	 Func vs Action vs Predicate 
+	 Records 
+	 Pattern Matching 
+	 Source Generators (basic) 
+	 Garbage Collection 
+	 LOH 
+	 Boxing/Unboxing 
+	 ValueTask 
+	 Compilation 
+	 IL/MSIL 
+	 Assembly metadata 
+	 PE file 
+	 CLR 
+	 CLR Loader 
+	 JIT 
+	 CTS 
+	 CLS 
+	 Garbage Collector 
+	 AppDomain (if relevant) 
+	 Entry point resolution
+    
+ 
+2. ASP.NET Core
+Very deep.
+Know:
+	 Middleware pipeline 
+	 Filters 
+	 Dependency Injection internals 
+	 Service Lifetimes 
+	 JWT Authentication 
+	 OAuth2 
+	 OpenID Connect 
+	 Authorization Policies 
+	 Minimal APIs 
+	 API Versioning 
+	 Rate Limiting 
+	 Health Checks 
+	 Logging 
+	 Serilog 
+	 Exception Handling 
+	 Caching 
+ 
+3. React
+This JD specifically mentions React.
+Not just basics.
+Study:
+	 Hooks 
+	 useMemo 
+	 useCallback 
+	 Context API 
+	 Redux 
+	 React Query 
+	 Lazy Loading 
+	 Suspense 
+	 Performance Optimization 
+	 Virtual DOM 
+	 Reconciliation 
+	 Memoization 
+	One recent candidate mentioned improving a CRUD app and discussing rendering optimization using useMemo and useCallback. 
+ 
+4. SQL
+Expect difficult SQL.
+Study:
+	 Window Functions 
+	 ROW_NUMBER 
+	 LEAD 
+	 LAG 
+	 CTE 
+	 Recursive CTE 
+	 Indexing 
+	 Execution Plans 
+	 Deadlocks 
+	 Locking 
+	 Isolation Levels 
+	 Query Optimization 
+	 Partitioning 
+	Coding questions are common.
+ 
+Priority 2 (Very Important) ⭐⭐⭐⭐⭐
+Microservices
+This is almost guaranteed.
+Prepare:
+	 API Gateway 
+	 BFF 
+	 Service Discovery 
+	 Circuit Breaker 
+	 Retry 
+	 Bulkhead 
+	 Saga Pattern 
+	 Outbox Pattern 
+	 CQRS 
+	 Event Driven Architecture 
+	 Idempotency 
+	 Distributed Transactions 
+	 Eventual Consistency 
+	Since you've worked on Microservices, expect scenario questions.
+ 
+System Design
+Technology Lead level usually includes design.
+Practice:
+	Design:
+	 Banking Transaction System 
+	 Payment Service 
+	 Notification Service 
+	 Authentication Service 
+	 File Upload System 
+	 Audit Logging 
+	Discuss:
+	 Scalability 
+	 High Availability 
+	 Security 
+	 Monitoring 
+	 Performance 
+	 Fault Tolerance 
+ 
+REST API Design
+Know:
+	 Idempotency 
+	 PUT vs PATCH 
+	 Versioning 
+	 Pagination 
+	 Filtering 
+	 HATEOAS 
+	 HTTP Status Codes 
+	 Retry Strategy 
+	 Correlation IDs 
+ 
+Priority 3 (Highest Difference Maker)
+Cryptography ⭐⭐⭐⭐⭐
+This is the biggest gap.
+The JD literally says:
+ Cryptography knowledge mandatory
+Do NOT ignore this.
+Study:
+Symmetric Encryption
+	 AES 
+	 DES 
+	 Triple DES 
+	Know:
+	 Key 
+	 IV 
+	 Block Cipher 
+ 
+Asymmetric Encryption
+	 RSA 
+	 ECC 
+	Know:
+	 Public Key 
+	 Private Key 
+ 
+Hashing
+	 SHA-256 
+	 SHA-512 
+	 MD5 
+	 SHA1 
+	Difference between
+	Hashing
+	Encryption
+	Encoding
+ 
+Digital Signature
+Know:
+	 Signing 
+	 Verification 
+ 
+Certificates
+	 X509 
+	 PKI 
+	 Certificate Chain 
+	 Root CA 
+ 
+HTTPS
+	How TLS works.
+	Handshake.
+	Certificate exchange.
+ 
+JWT
+	How JWT is signed.
+	Difference between:
+	Signing
+	Encrypting
+ 
+Key Vault
+If using Azure
+	 Key Vault 
+	 Secrets 
+	 Certificates 
+ 
+.NET Cryptography Namespace
+Study:
+ 
+	System.Security.Cryptography
+Know:
+	 RSA 
+	 Aes 
+	 SHA256 
+	 HMACSHA256 
+ 
+DevOps
+Know:
+	 Jenkins 
+	 CI/CD 
+	 GitHub Actions 
+	 Ansible 
+	 Docker 
+	 Kubernetes basics 
+ 
+Kafka
+Very likely.
+Study:
+	 Producer 
+	 Consumer 
+	 Topic 
+	 Partition 
+	 Offset 
+	 Consumer Group 
+	 Ordering 
+	 Exactly Once 
+	 At Least Once 
+	 Dead Letter Queue 
+ 
+Containers
+Know:
+	Docker
+	 Images 
+	 Containers 
+	 Layers 
+	 Dockerfile 
+	 Multi-stage build 
+	Kubernetes
+	 Pod 
+	 Deployment 
+	 ReplicaSet 
+	 Service 
+	 ConfigMap 
+	 Secret 
+ 
+Automation Testing
+Know basics of:
+	 xUnit 
+	 NUnit 
+	 MSTest 
+	 Moq 
+	 Integration Testing 
+ 
+Architecture
+Expect questions like:
+	Why Microservices?
+	When Monolith?
+	How would you migrate?
+	How do you reduce latency?
+	How do you secure APIs?
+ 
+Agile
+Know:
+	 Sprint 
+	 Story Points 
+	 Refinement 
+	 Definition of Done 
+	 Retrospective 
+ 
+Behavioral
+Prepare STAR answers for:
+	 Production outage 
+	 Conflict 
+	 Leading team 
+	 Handling difficult client 
+	 Performance issue 
+	 Security issue 
+	 Critical bug 
+	 Project failure 
+ 
+Coding
+Expect:
+	 C# 
+	 SQL 
+	Medium difficulty.
+	Examples:
+	 LRU Cache 
+	 Two Sum 
+	 Merge Intervals 
+	 String Problems 
+	 Dictionary usage 
+	 LINQ
+ 

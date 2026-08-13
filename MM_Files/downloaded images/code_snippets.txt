@@ -1,0 +1,1141 @@
+/*
+•	Bubble Sort
+
+public static string BubbleSortString(string input)
+{
+    char[] arr = input.ToCharArray();
+
+    for (int i = 0; i < arr.Length - 1; i++)
+    {
+        for (int j = 0; j < arr.Length - i - 1; j++)
+        {
+            if (arr[j] > arr[j + 1])
+            {
+                char temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+
+    return new string(arr);
+}
+
+•	Selection Sort
+public static string SelectionSortString(string input)
+{
+    char[] arr = input.ToCharArray();
+
+    for (int i = 0; i < arr.Length - 1; i++)
+    {
+        int minIndex = i;
+
+        for (int j = i + 1; j < arr.Length; j++)
+        {
+            if (arr[j] < arr[minIndex])
+                minIndex = j;
+        }
+
+        char temp = arr[i];
+        arr[i] = arr[minIndex];
+        arr[minIndex] = temp;
+    }
+
+    return new string(arr);
+}
+•	Insertion Sort
+public static string InsertionSortString(string input)
+{
+    char[] arr = input.ToCharArray();
+
+    for (int i = 1; i < arr.Length; i++)
+    {
+        char key = arr[i];
+        int j = i - 1;
+
+        while (j >= 0 && arr[j] > key)
+        {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+
+        arr[j + 1] = key;
+    }
+
+    return new string(arr);
+}
+•	Quick Sort
+public static string QuickSortString(string input)
+{
+    char[] arr = input.ToCharArray();
+    QuickSort(arr, 0, arr.Length - 1);
+    return new string(arr);
+}
+
+private static void QuickSort(char[] arr, int low, int high)
+{
+    if (low < high)
+    {
+        int pi = Partition(arr, low, high);
+
+        QuickSort(arr, low, pi - 1);
+        QuickSort(arr, pi + 1, high);
+    }
+}
+
+private static int Partition(char[] arr, int low, int high)
+{
+    char pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++)
+    {
+        if (arr[j] < pivot)
+        {
+            i++;
+
+            char temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
+    char t = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = t;
+
+    return i + 1;
+}
+•	Merge Sort
+public static string MergeSortString(string input)
+{
+    char[] arr = input.ToCharArray();
+    MergeSort(arr, 0, arr.Length - 1);
+    return new string(arr);
+}
+
+private static void MergeSort(char[] arr, int left, int right)
+{
+    if (left >= right)
+        return;
+
+    int mid = (left + right) / 2;
+
+    MergeSort(arr, left, mid);
+    MergeSort(arr, mid + 1, right);
+
+    Merge(arr, left, mid, right);
+}
+
+private static void Merge(char[] arr, int left, int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    char[] L = new char[n1];
+    char[] R = new char[n2];
+
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+
+    for (int i = 0; i < n2; i++)
+        R[i] = arr[mid + 1 + i];
+
+    int x = 0, y = 0, k = left;
+
+    while (x < n1 && y < n2)
+    {
+        if (L[x] <= R[y])
+            arr[k++] = L[x++];
+        else
+            arr[k++] = R[y++];
+    }
+
+    while (x < n1)
+        arr[k++] = L[x++];
+
+    while (y < n2)
+        arr[k++] = R[y++];
+}
+•	Heap Sort
+public static string HeapSortString(string input)
+{
+    char[] arr = input.ToCharArray();
+    int n = arr.Length;
+
+    for (int i = n / 2 - 1; i >= 0; i--)
+        Heapify(arr, n, i);
+
+    for (int i = n - 1; i > 0; i--)
+    {
+        char temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+
+        Heapify(arr, i, 0);
+    }
+
+    return new string(arr);
+}
+
+private static void Heapify(char[] arr, int n, int i)
+{
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
+    if (largest != i)
+    {
+        char temp = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = temp;
+
+        Heapify(arr, n, largest);
+    }
+}
+•	Counting Sort (best for character sorting)
+public static string CountingSortString(string input)
+{
+    int[] count = new int[256];
+
+    foreach (char c in input)
+        count[c]++;
+
+    char[] result = new char[input.Length];
+    int index = 0;
+
+    for (int i = 0; i < 256; i++)
+    {
+        while (count[i] > 0)
+        {
+            result[index++] = (char)i;
+            count[i]--;
+        }
+    }
+
+    return new string(result);
+}
+*/
+
+/*
+https://blog.algomaster.io/p/load-balancing-algorithms-explained-with-code
+https://medium.com/@Bug_Cracker/system-design-load-balancer-code-architecture-a20db9747a63
+https://github.com/rbhattarai/e2e-playwright-mcp
+https://github.com/massmutual-git/agentic-sdlc-bootcamp/tree/module-2.1
+https://www.metricsthatmatter.com/url/u.aspx?7E254C92D231113464
+https://learn.microsoft.com/en-us/users/me/achievements?WT.mc_id=ilt_partner_webpage_wwl&ocid=3575870&redeem=D3NKN8
+https://learn.microsoft.com/en-us/users/me/achievements?WT.mc_id=ilt_partner_webpage_wwl&ocid=3575870&redeem=D3NKN8
+https://aka.ms/classification-articles
+https://portal.customtranslator.azure.ai/workspaces
+https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
+https://learn.microsoft.com/en-us/azure/ai-services/language-service/question-answering/tutorials/bot-service
+https://maps.app.goo.gl/5wrPAm7kmqASrgVR6?g_st=iw
+https://learn.microsoft.com/en-us/users/me/achievements?WT.mc_id=ilt_partner_webpage_wwl&ocid=3575870&redeem=D3NKN8
+amulyasingh888@gmail.com
+https://survey.zohopublic.com/zs/1vBB57
+https://degreed.com/pathway/k957yj0y83?orgsso=massmutual
+https://www.linkedin.com/jobs/view/4300738124
+https://taragati.ai/#catalog
+https://massmutual.sharepoint.com/sites/MarComHRSharePoint/Shared%20Documents/Forms/AllItems.aspx?ga=1MarCom%20HR%20SharePoint%20%2D%20HR%20Resources%20%2D%20All%20Documents&id=%2Fsites%2FMarComHRSharePoint%2FShared%20Documents%2FHR%20Resources%2FBenefits&viewid=b994c9c6%2Dbe55%2D4220%2Db651%2Da106bef3bad0
+https://github.com/ikriv-samples/DotNetStringSorting
+ 
+*/
+
+/*
+===================================
+Got it :+1:
+Here’s the cleanest, **actually usable** way to get this into a **downloadable PDF** without hacks or messy copy-paste.
+---
+## :white_check_mark: Best Option (Recommended): I’ll give you a **PDF-ready document** you can export in 2 clicks
+Because I can’t directly attach files, the **most reliable approach** is:
+1. I give you a **professionally structured, PDF-formatted document**
+2. You paste it into:
+  * **Google Docs** → *File → Download → PDF*, or
+  * **Notion** → *Export → PDF*, or
+  * **Word** → *Save as PDF*
+This is what most serious candidates do.
+---
+## :page_facing_up: FAANG 6-MONTH PREPARATION ROADMAP (PDF CONTENT)
+You can copy **everything below** into Google Docs / Word.
+---
+# FAANG INTERVIEW PREPARATION ROADMAP
+### (6-Month Extreme Plan for Senior .NET Developers)
+---
+## PROFILE ASSUMPTIONS
+* 10+ years of .NET Full-Stack Experience
+* Beginner in DSA
+* Target: FAANG / Tier-1 Product Companies
+* Language: **C#**
+---
+## INTERVIEW BREAKDOWN
+| Area                         | Weight |
+| ---------------------------- | ------ |
+| Data Structures & Algorithms | 50–60% |
+| Low Level Design (LLD)       | 15–20% |
+| High Level Design (HLD)      | 15–20% |
+| Behavioral                   | 10%    |
+---
+# MONTH 1: DSA FOUNDATIONS
+## Topics
+* Big-O Notation
+* Arrays & Strings
+* Hashing
+* Two Pointers
+* Sliding Window
+## LeetCode Problems
+* 1 – Two Sum
+* 217 – Contains Duplicate
+* 242 – Valid Anagram
+* 121 – Best Time to Buy and Sell Stock
+* 238 – Product of Array Except Self
+---
+# MONTH 2: TREES, BST & HEAPS
+## Topics
+* Binary Trees (DFS, BFS)
+* Binary Search Trees
+* Heaps / Priority Queue
+## LeetCode Problems
+* 104 – Maximum Depth of Binary Tree
+* 226 – Invert Binary Tree
+* 102 – Level Order Traversal
+* 98 – Validate BST
+* 230 – Kth Smallest in BST
+* 215 – Kth Largest Element in Array
+* 295 – Find Median from Data Stream
+---
+# MONTH 3: ADVANCED DSA
+## Topics
+* Backtracking
+* Graphs
+* Dynamic Programming
+## LeetCode Problems
+### Backtracking
+* 78 – Subsets
+* 46 – Permutations
+* 39 – Combination Sum
+### Graphs
+* 200 – Number of Islands
+* 133 – Clone Graph
+* 207 – Course Schedule
+### Dynamic Programming
+* 70 – Climbing Stairs
+* 198 – House Robber
+* 322 – Coin Change
+* 1143 – Longest Common Subsequence
+---
+# MONTH 4: LOW LEVEL DESIGN (LLD)
+## Core Concepts
+* SOLID Principles
+* Design Patterns
+* Thread Safety
+* OOP Best Practices
+## LLD Problems (Implement in C#)
+* Parking Lot System
+* LRU Cache
+* Elevator System
+* Online Shopping Cart
+* Rate Limiter
+## Resources
+* Head First Design Patterns
+* Arpit Bhayani (YouTube)
+* SudoCode (YouTube)
+---
+# MONTH 5: HIGH LEVEL DESIGN (SYSTEM DESIGN)
+## Topics
+* Scalability
+* Load Balancing
+* Caching (Redis)
+* Databases (SQL vs NoSQL)
+* Message Queues (Kafka)
+* CAP Theorem
+* Consistency Models
+## System Design Questions
+* URL Shortener
+* Twitter / Feed System
+* Chat Application
+* Notification System
+* File Storage System
+## Resources
+* Designing Data-Intensive Applications
+* Gaurav Sen (YouTube)
+* System Design Primer (GitHub)
+---
+# MONTH 6: INTERVIEW MODE
+## DSA
+* Top 150 LeetCode Problems
+* 2 Medium + 1 Hard daily
+* Time limit: 35 minutes per problem
+## Mock Interviews
+* Pramp
+* Interviewing.io
+* Peer mock interviews
+---
+# DAILY STUDY STRUCTURE
+## Weekdays (2–3 hrs)
+* 1 hr DSA
+* 1 hr Revision
+* 30 min Design Reading
+## Weekends (6–8 hrs)
+* 4–5 DSA Problems
+* 1 LLD Design
+* 1 HLD Whiteboard Session
+---
+# BEHAVIORAL PREPARATION
+Prepare STAR stories for:
+* Leadership
+* Conflict resolution
+* Failure & recovery
+* Mentorship
+* Ownership
+---
+# FINAL NOTE
+You are not learning engineering —
+You are learning **how FAANG evaluates engineers**.
+Consistency + patterns + communication = success.
+---
+## :inbox_tray: HOW TO CONVERT THIS TO PDF (2 MIN)
+### Option 1: Google Docs (Best)
+1. Open Google Docs
+2. Paste content
+3. File → Download → PDF
+### Option 2: Word
+1. Paste content
+2. Save As → PDF
+---
+## :rocket: NEXT (Optional)
+If you want, I can:
+* Create a **designed cover page**
+* Add a **weekly checklist**
+* Generate a **printable tracker**
+* Split into **DSA / LLD / HLD separate PDFs**
+Just tell me what you want next and I’ll optimize it for you :fire:
+====================================================================
+Perfect. Let’s lock this in :muscle:
+I’ll give you **three concrete things** you can start using *today*:
+1. **C# DSA Interview Template (battle-tested)**
+2. **Day-by-Day 6-Month Calendar (realistic grind)**
+3. **FAANG-style Mock Interview Questions (DSA + LLD + HLD)**
+No fluff. This is how serious candidates prep.
+---
+# :one: C# DSA INTERVIEW TEMPLATE (USE THIS ALWAYS)
+### Problem-Solving Flow (Say this OUT LOUD in interviews)
+1. Clarify inputs / outputs
+2. Ask about constraints
+3. Brute force approach
+4. Optimize
+5. Code
+6. Analyze complexity
+7. Test with examples
+---
+### :small_blue_diamond: C# LeetCode Template
+```csharp
+public class Solution
+{
+   public int Solve(int[] nums)
+   {
+       // 1. Edge cases
+       if (nums == null || nums.Length == 0)
+           return 0;
+       // 2. Core logic
+       // TODO: Implement logic
+       return 0;
+   }
+}
+```
+---
+### :small_blue_diamond: HashMap Template
+```csharp
+Dictionary<int, int> map = new Dictionary<int, int>();
+foreach (var num in nums)
+{
+   if (map.ContainsKey(num))
+       map[num]++;
+   else
+       map[num] = 1;
+}
+```
+---
+### :small_blue_diamond: Sliding Window Template
+```csharp
+int left = 0;
+for (int right = 0; right < s.Length; right++)
+{
+   // expand window
+   while (/* condition invalid */)
+   {
+       // shrink window
+       left++;
+   }
+   // update answer
+}
+```
+---
+### 🔹 Tree DFS Template
+```csharp
+public int DFS(TreeNode root)
+{
+   if (root == null) return 0;
+   int left = DFS(root.left);
+   int right = DFS(root.right);
+   return Math.Max(left, right) + 1;
+}
+```
+---
+### 🔹 BFS Template
+```csharp
+Queue<TreeNode> q = new Queue<TreeNode>();
+q.Enqueue(root);
+while (q.Count > 0)
+{
+   int size = q.Count;
+   for (int i = 0; i < size; i++)
+   {
+       var node = q.Dequeue();
+       if (node.left != null) q.Enqueue(node.left);
+       if (node.right != null) q.Enqueue(node.right);
+   }
+}
+```
+---
+# 2️⃣ 6-MONTH DAY-BY-DAY CALENDAR (REALISTIC)
+### ⏱ Time Commitment
+* **Weekdays:** 2–3 hrs
+* **Weekends:** 6–8 hrs
+---
+## MONTH 1 (Foundations)
+### Monday–Friday (Daily)
+* **30 min** → Revise yesterday’s problem
+* **60 min** → New LeetCode problem
+* **30 min** → Notes + pattern writing
+### Example Week (Week 1)
+| Day | Task                         |
+| --- | ---------------------------- |
+| Mon | Two Sum                      |
+| Tue | Contains Duplicate           |
+| Wed | Valid Anagram                |
+| Thu | Best Time Buy Sell Stock     |
+| Fri | Product of Array Except Self |
+| Sat | Re-do all 5 + complexity     |
+| Sun | Mock interview + recap       |
+---
+## MONTH 2 (Trees, BST, Heaps)
+* 1 tree problem **every day**
+* Weekend: **whiteboard DFS/BFS**
+Rule:
+> If you can’t solve a tree problem in 30 min → redo same problem next day
+---
+## MONTH 3 (Graphs + DP)
+### DP Rule (Important)
+1. Write recursive solution
+2. Add memoization
+3. Convert to tabulation
+Never skip step 1.
+---
+## MONTH 4 (LLD Focus)
+### Weekly Structure
+* **2 LLD problems/week**
+* Implement fully in C#
+### Example Week
+* Tue → Design LRU Cache
+* Thu → Design Parking Lot
+* Sat → Refactor + SOLID discussion
+---
+## MONTH 5 (HLD Focus)
+### Every System Design Session
+1. Requirements
+2. APIs
+3. Data model
+4. Scale
+5. Bottlenecks
+### Weekly
+* 1 full system design
+* 1 design review (record yourself explaining)
+---
+## MONTH 6 (Interview Mode)
+### Daily
+* 2 Medium + 1 Hard LeetCode
+* Timed (35 min max)
+### Weekly
+* 2 mock interviews
+* 1 behavioral mock
+---
+# :three: FAANG-STYLE MOCK QUESTIONS
+## :brain: DSA (Common FAANG)
+* Subarray Sum Equals K
+* LRU Cache
+* Number of Islands
+* Course Schedule
+* Coin Change
+* Longest Increasing Subsequence
+Expect **follow-ups** like:
+> Can you optimize space?
+> What if input is streaming?
+---
+## :bricks: LLD (C# Focused)
+### Must Practice Explaining:
+1. **Design Parking Lot**
+  * Classes
+  * Thread safety
+  * Extensibility
+2. **Design LRU Cache**
+  * Dictionary + Doubly Linked List
+  * O(1) guarantee
+3. **Design Rate Limiter**
+  * Token bucket
+  * Distributed case
+---
+## :earth_africa: HLD (FAANG Level)
+### Guaranteed Questions
+* Design Twitter
+* Design URL Shortener
+* Design Chat System
+### Follow-ups FAANG loves:
+* How do you scale reads?
+* How do you handle failures?
+* How do you ensure consistency?
+---
+## :speaking_head_in_silhouette: Behavioral (You’ll score high here)
+Prepare **STAR stories** for:
+* Leading without authority
+* Handling outages
+* Mentoring juniors
+* Disagreeing with architects
+---
+# FINAL ADVICE (IMPORTANT)
+You are **not a beginner**.
+You are an **experienced engineer learning interview patterns**.
+If you:
+* Stick to this for 6 months
+* Speak while solving
+* Write clean C#
+:point_right: FAANG interviews become **predictable**, not scary.
+---
+If you want next:
+:fire: **Exact Top 150 LeetCode list (C# priority)**
+:fire: **LLD C# code samples**
+:fire: **Mock interview role-play (I’ll interview you)**
+Tell me what you want next and we go harder :rocket:
+===================================================================
+Love this goal. With **10 years of .NET full-stack experience**, you already have a *huge* edge—system intuition, production experience, debugging instincts. What you’re missing is **interview muscle**, not engineering ability. This roadmap is designed to **hurt (in a good way)** and get you FAANG-ready in **6 months**.
+I’ll assume:
+* Beginner in **DSA**
+* Strong in **C# / .NET**
+* Target: **FAANG / top product companies**
+* Willing to grind **2–4 hrs on weekdays, 6–8 hrs on weekends**
+---
+# FAANG INTERVIEW BREAKDOWN (Know the Game)
+### FAANG interviews typically test:
+1. **DSA (50–60%)**
+2. **LLD (Object-Oriented Design)**
+3. **HLD / System Design**
+4. **Behavioral (Leadership principles, ownership, impact)**
+You already win at **behavioral** due to experience.
+We’ll focus heavily on **DSA + Design**.
+---
+# 6-MONTH EXTREME ROADMAP
+## PHASE 0 (Week 0 – Setup Week)
+### Tools
+* Language: **C#**
+* LeetCode account (Premium if possible)
+* GitHub repo: `faang-prep`
+* Notebook / Notion for notes
+### Must-have habits
+* Write **clean, production-level code**
+* Always analyze **time + space complexity**
+* Speak solutions **out loud** (simulate interview)
+---
+# MONTH 1–2: DSA FOUNDATIONS (Brutal but Necessary)
+## Goal
+Build **problem-solving patterns** from scratch.
+---
+## Month 1 – Core DSA Basics
+### Week 1: Big-O + Arrays + Strings
+**Topics**
+* Time & Space Complexity
+* Arrays vs Lists
+* Sliding Window
+* Two Pointers
+**LeetCode (in order)**
+* 217 – Contains Duplicate
+* 242 – Valid Anagram
+* 1 – Two Sum
+* 121 – Best Time to Buy and Sell Stock
+* 125 – Valid Palindrome
+* 238 – Product of Array Except Self :star:
+---
+### Week 2: Hashing + Stack
+**Topics**
+* HashMap / Dictionary
+* Stack applications
+**LeetCode**
+* 49 – Group Anagrams
+* 347 – Top K Frequent Elements
+* 20 – Valid Parentheses
+* 155 – Min Stack
+* 739 – Daily Temperatures :star:
+---
+### Week 3: Linked List
+**Topics**
+* Fast & Slow pointers
+* In-place reversal
+**LeetCode**
+* 206 – Reverse Linked List
+* 21 – Merge Two Sorted Lists
+* 141 – Linked List Cycle
+* 19 – Remove Nth Node From End
+* 234 – Palindrome Linked List :star:
+---
+### Week 4: Recursion + Binary Search
+**Topics**
+* Recursion basics
+* Binary search patterns
+**LeetCode**
+* 704 – Binary Search
+* 33 – Search in Rotated Sorted Array
+* 153 – Find Minimum in Rotated Sorted Array
+* 278 – First Bad Version
+---
+## Month 2 – Trees & Heaps (Very Important)
+### Week 5: Binary Trees
+**Topics**
+* DFS (Inorder, Preorder, Postorder)
+* BFS (Level order)
+**LeetCode**
+* 104 – Max Depth of Binary Tree
+* 226 – Invert Binary Tree
+* 102 – Level Order Traversal
+* 110 – Balanced Binary Tree
+* 543 – Diameter of Binary Tree :star:
+---
+### Week 6: BST + Heaps
+**Topics**
+* BST properties
+* PriorityQueue
+**LeetCode**
+* 98 – Validate BST
+* 230 – Kth Smallest in BST
+* 215 – Kth Largest Element
+* 295 – Find Median from Data Stream :star:
+---
+### Week 7–8: Review + Speed
+* Redo all :star: problems **without looking**
+* Time yourself (30–35 mins per problem)
+---
+# MONTH 3: ADVANCED DSA (FAANG FAVORITES)
+## Goal
+Handle **hard interview patterns**
+---
+### Week 9: Sliding Window + Prefix Sum
+**LeetCode**
+* 3 – Longest Substring Without Repeating Characters
+* 424 – Longest Repeating Character Replacement
+* 560 – Subarray Sum Equals K :star:
+---
+### Week 10: Backtracking
+**LeetCode**
+* 78 – Subsets
+* 46 – Permutations
+* 39 – Combination Sum
+* 17 – Letter Combinations of Phone Number :star:
+---
+### Week 11: Graphs
+**Topics**
+* BFS / DFS
+* Cycle detection
+**LeetCode**
+* 200 – Number of Islands
+* 133 – Clone Graph
+* 207 – Course Schedule :star:
+---
+### Week 12: Dynamic Programming (Critical)
+**Start slow, build intuition**
+**LeetCode**
+* 70 – Climbing Stairs
+* 198 – House Robber
+* 322 – Coin Change :star:
+* 300 – Longest Increasing Subsequence
+* 1143 – Longest Common Subsequence :star:
+---
+# MONTH 4: LOW-LEVEL DESIGN (LLD)
+## Goal
+Write **clean, extensible, interview-grade OOP designs**
+### Topics
+* SOLID principles
+* Design Patterns (only interview-relevant)
+* Class diagrams
+* Thread safety
+---
+### Must-Do LLD Problems
+Implement in **C#**
+1. **Parking Lot**
+2. **LRU Cache**
+3. **Elevator System**
+4. **Online Shopping Cart**
+5. **Rate Limiter**
+### Sources
+* :blue_book: *“Head First Design Patterns”*
+* :blue_book: *“Design Patterns – Gang of Four” (skim)*
+* YouTube:
+  * **Arpit Bhayani (LLD)**
+  * **SudoCode (LLD)**
+---
+# MONTH 5: HIGH-LEVEL DESIGN (SYSTEM DESIGN)
+## Goal
+Think at **FAANG scale**
+---
+### Core Topics
+* Scalability
+* Load Balancers
+* Caching (Redis)
+* Databases (SQL vs NoSQL)
+* Sharding
+* CAP theorem
+* Message Queues (Kafka)
+* Consistency
+---
+### Must-Practice Designs
+1. **URL Shortener**
+2. **Twitter / Feed System**
+3. **Chat Application**
+4. **Rate Limiter**
+5. **Notification System**
+6. **File Storage (Google Drive)**
+### Sources
+* :blue_book: *“Designing Data-Intensive Applications”*
+* YouTube:
+  * **Gaurav Sen**
+  * **System Design Primer (GitHub)**
+---
+# MONTH 6: INTERVIEW SIMULATION & POLISHING
+## DSA
+* Re-do **Top 150 LeetCode**
+* Daily: 2 medium + 1 hard
+## Mock Interviews
+* Pramp
+* Interviewing.io
+* Peer mock interviews
+## Behavioral (Don’t Skip!)
+Prepare STAR stories for:
+* Conflict
+* Failure
+* Leadership
+* Ownership
+* Mentorship
+---
+# DAILY STUDY STRUCTURE (IMPORTANT)
+**Weekday (2–3 hrs)**
+* 1 hr DSA
+* 1 hr revision
+* 30 mins system/LLD reading
+**Weekend (6–8 hrs)**
+* 4–5 DSA problems
+* 1 LLD design
+* 1 HLD discussion (whiteboard)
+---
+# FINAL TRUTH (Very Important)
+You don’t need:
+:x: 1000 LeetCode problems
+:x: Every design pattern
+You need:
+:white_check_mark: **Pattern recognition**
+:white_check_mark: **Clear communication**
+:white_check_mark: **Clean code**
+:white_check_mark: **Confidence under pressure**
+With 10 years of experience + this grind, **FAANG is realistic**.
+---
+If you want, next I can:
+* Convert this into a **day-by-day calendar**
+* Create a **C#-specific DSA template**
+* Share **FAANG-style mock interview questions**
+Just tell me :fire:
+*/
+
+/*
+Smart Work Space Management
+
+Rough Idea
+
+We have 2 ways to track whether the employee is in office or not
+ 
+• Cab booking details - not very accurate because ppl might opt for personal commute..
+
+• ID Card swipe in -  Very much accurate as everyone punches..
+
+• We can deploy QR codes at each desk and ask the employee to scan it whenever they wants to sit at that desk. To make it more accurate, we already store the asset details of each employee. When in office every employee will mostly connect the laptops to the LAN cable provided at each desk. If we figure out a way to notify us on when a laptop is connected to LAN cable we can easily track whether a desk is occupied or not..
+ 
+Zone-A - facing Road
+
+Zone-B -facing backside
+ 
+ 
+QR Codes will be generated Workstation number + ZoneID and will hit an API endpoint when it is scanned and get the user details. We now map the desk with the user.
+ 
+How to unlock the desk:
+ 
+• When the user laptop is not connected to the LAN for a stipulated time (let's say 45min) then we can unlock the desk for others to use..
+
+◦ What if the user is in a meeting which is more than the stipulated time? -> To avoid such cases we can use the EmpId that we get when the user scans his QR Code and access the Calendar to check if the employee is in any meeting. .
+
+◦ What if the user is in a meeting which is not scheduled and doesn't showup in Calendar? OR if user blocked a desk but away from desk for more than stipulated time -> We can use heartbeat-style reminders, which notifies users to confirm if the desk can be released or not..
+
+◦ if user is in office but didn't scan any QR. -> We can use TeamsBot/ SlackBot to notify the user or manager. .
+
+Using these reading we can generate reports for which floor/zone/desk is heavily occupied on which days/shifts.
+
+Create live dashboards to view the free seats.
+
+To map or assign the new joiners to their buddy and assign a desk to managers near the team.
+ 
+AI Usage:
+ 
+• Can be used to suggest user about where his other teammates are seated and also check if any adjacent seat is available so that he can shift to that seat..
+
+• Favorite seat feature: As every user has their own favorite seat which can be near his friends, teammates, window seat etc. AI can be leveraged to identify if users favorite seat.
+ 
+Yes. The QR code itself doesn't perform authentication—it simply encodes a URL. The authentication flow happens after the user opens that URL.
+ 
+A typical architecture looks like this:
+ 
+        Scan QR Code
+
+              │
+
+              ▼
+https://api.example.com/scan
+
+              │
+
+              ▼
+
+   Check if user is authenticated
+
+              │
+
+      ┌───────┴────────┐
+
+      │                │
+
+      ▼                ▼
+
+Not logged in      Logged in
+
+      │                │
+
+      ▼                ▼
+
+Redirect to      Continue to API
+
+Okta Login
+
+      │
+
+      ▼
+
+User authenticates
+
+      │
+
+      ▼
+
+Okta redirects back with
+
+Authorization Code
+
+      │
+
+      ▼
+
+Exchange for tokens
+
+      │
+
+      ▼
+
+Read user claims
+
+(email, name, groups, etc.)
+ 
+If the Okta login is organization-specific
+ 
+There are two common scenarios.
+ 
+Option 1: One Okta organization (single tenant)
+ 
+If everyone belongs to the same Okta tenant, it's straightforward.
+ 
+QR code points to
+https://api.company.com/scan
+ 
+Your application redirects to
+https://company.okta.com/oauth2/default/v1/authorize
+ 
+User logs in.
+
+Okta returns an ID token/access token.
+
+Your API extracts claims such as:
+
+sub
+
+email
+
+preferred_username
+
+given_name
+
+family_name
+
+groups (if configured)
+
+Option 2: Multiple customer organizations (multi-tenant)
+ 
+Suppose different customers have different Okta tenants.
+ 
+Customer A
+
+acme.okta.com
+ 
+Customer B
+
+xyz.okta.com
+ 
+Customer C
+
+demo.okta.com
+ 
+ 
+Your application first needs to determine which Okta tenant to use.
+ 
+Common approaches include:
+ 
+QR code contains a tenant ID
+https://api.example.com/scan?tenant=acme
+ 
+ 
+Your backend maps:
+ 
+acme
+
+   ↓
+https://acme.okta.com
+ 
+ 
+and redirects to the appropriate authorization endpoint.
+ 
+Or:
+ 
+Ask the user for their company email first.
+
+john@acme.com
+ 
+ 
+Then determine the Okta tenant from the email domain.
+ 
+OAuth Authorization Code Flow (recommended)
+
+QR Scan
+
+    │
+
+    ▼
+
+Your API
+
+    │
+
+    ▼
+
+302 Redirect
+
+    │
+
+    ▼
+
+Okta Authorize Endpoint
+
+    │
+
+User Login
+
+    │
+
+    ▼
+
+Redirect back
+
+    │
+
+Authorization Code
+
+    │
+
+    ▼
+
+Backend exchanges code
+
+    │
+
+Gets:
+
+  - ID Token
+
+  - Access Token
+
+    │
+
+    ▼
+
+Read user information
+ 
+ 
+This is the standard and most secure flow for web applications.
+ 
+User details you can retrieve
+ 
+From the ID token or the /userinfo endpoint, you can obtain claims such as:
+ 
+{
+
+  "sub": "00u12345...",
+
+  "email": "john@acme.com",
+
+  "name": "John Smith",
+
+  "preferred_username": "john@acme.com",
+
+  "given_name": "John",
+
+  "family_name": "Smith",
+
+  "groups": ["Admin", "Employees"]
+
+}
+ 
+Generating the QR code
+ 
+The QR code only needs to encode your application URL, for example:
+ 
+https://api.example.com/scan?tenant=acme
+ 
+ 
+When scanned:
+ 
+User opens the URL.
+
+Your application checks for an authenticated session.
+
+If not authenticated, redirect to the correct Okta authorization endpoint.
+
+After successful login, your backend receives the authorization code, exchanges it for tokens, and identifies the user.
+ 
+This approach keeps the QR code simple while ensuring that authentication happens through the correct Okta organization.
+ 
+If you're building this with a specific backend framework (such as ASP.NET Core, Java Spring Boot, Node.js/Express, Python/FastAPI, or AWS API Gateway + Lambda), I can also provide a complete implementation example for that stack.
+ */
